@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, ChevronDown, Copy, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, Copy, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
+import CustomSelect from "./CustomSelect";
 import { collections, siteFields, type Field, type CollectionKey } from "@/lib/adminSchema";
 import { slugify, youtubeThumb } from "@/lib/format";
 
@@ -298,21 +299,14 @@ function FieldInput({
   if (field.type === "ascendancy") {
     const current = String(value ?? "");
     const list = current && !ASCENDANCY_OPTIONS.includes(current) ? [current, ...ASCENDANCY_OPTIONS] : ASCENDANCY_OPTIONS;
+    const options = [
+      { value: "", label: "Sem classe definida" },
+      ...list.map((option) => ({ value: option, label: option })),
+    ];
     return (
       <div>
         <Label>{field.label}</Label>
-        <select
-          value={current}
-          onChange={(event) => onChange(event.target.value)}
-          className={inputClass}
-        >
-          <option value="">Sem classe definida</option>
-          {list.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <CustomSelect value={current} options={options} onChange={onChange} placeholder="Sem classe definida" />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -333,20 +327,11 @@ function FieldInput({
   }
 
   if (field.type === "select") {
+    const options = (field.options ?? []).map((option) => ({ value: option, label: option }));
     return (
       <div>
         <Label>{field.label}</Label>
-        <select
-          value={String(value ?? "")}
-          onChange={(event) => onChange(event.target.value)}
-          className={inputClass}
-        >
-          {(field.options ?? []).map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <CustomSelect value={String(value ?? "")} options={options} onChange={onChange} />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -407,6 +392,7 @@ export default function AdminEditor({
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("builds");
+  const [savedSnapshot, setSavedSnapshot] = useState(initial);
   const [data, setData] = useState(initial);
   const [editing, setEditing] = useState<number | null>(null);
   const [filter, setFilter] = useState("");
@@ -448,6 +434,7 @@ export default function AdminEditor({
       });
       const json = await response.json();
       if (!response.ok) throw new Error(json.error || "Falha ao salvar");
+      setSavedSnapshot(data);
       setDirty(false);
       setStatus(
         json.storage === "supabase"
@@ -471,6 +458,15 @@ export default function AdminEditor({
     list[index] = next;
     setData({ ...data, [collection.key]: list });
     setDirty(true);
+  }
+
+  function discard() {
+    setData(savedSnapshot);
+    setDirty(false);
+    setStatus("");
+    if (collection && editing !== null && editing >= (savedSnapshot[collection.key] as Row[]).length) {
+      setEditing(null);
+    }
   }
 
   function updateSite(key: string, value: unknown) {
@@ -558,9 +554,6 @@ export default function AdminEditor({
         <button type="button" onClick={save} disabled={busy} className="btn btn-primary btn-sm disabled:opacity-50">
           {busy ? "Salvando…" : "Salvar"}
         </button>
-        {dirty ? (
-          <span className="badge bg-[#ffd11a]/30 text-ink">Alterações não salvas</span>
-        ) : null}
         {status ? <span className="text-xs font-semibold text-positive-deep">{status}</span> : null}
       </div>
 
@@ -717,16 +710,34 @@ export default function AdminEditor({
       )}
 
       {dirty ? (
-        <div className="fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-ink px-5 py-2.5 text-canvas shadow-xl">
-          <span className="text-xs font-medium text-canvas/85">Alterações não salvas</span>
-          <button
-            type="button"
-            onClick={save}
-            disabled={busy}
-            className="btn btn-primary btn-sm disabled:opacity-50"
-          >
-            {busy ? "Salvando…" : "Salvar agora"}
-          </button>
+        <div
+          role="dialog"
+          aria-label="Alterações não salvas"
+          className="fixed bottom-5 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-3 rounded-2xl border border-canvas/15 bg-ink px-4 py-3 text-canvas shadow-[0_20px_50px_-12px_rgba(14,15,12,0.45)] animate-fade-up"
+        >
+          <span className="flex items-center gap-2 text-xs font-semibold text-canvas/90">
+            <span className="h-2 w-2 rounded-full bg-warning" />
+            Você tem alterações não salvas
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={discard}
+              disabled={busy}
+              className="inline-flex h-9 items-center gap-1.5 rounded-3xl px-3 text-xs font-semibold text-canvas/75 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              Desfazer
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              disabled={busy}
+              className="btn btn-primary btn-sm disabled:opacity-50"
+            >
+              {busy ? "Salvando…" : "Salvar"}
+            </button>
+          </div>
         </div>
       ) : null}
     </div>
