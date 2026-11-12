@@ -111,6 +111,12 @@ export default async function BuildPage({ params }: Params) {
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
+            <a href={youtubeWatch(build.videoId)} target="_blank" rel="noreferrer" className="btn btn-primary">
+              <YoutubeIcon className="h-4 w-4" />
+              Abrir no YouTube
+              <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
+            </a>
+            <CopyLinkButton variant="tertiary" />
             {build.pobUrl ? (
               <>
                 <CopyLinkButton text={build.pobUrl} label="Copiar PoB" copiedLabel="PoB copiado!" variant="tertiary" />
@@ -120,12 +126,6 @@ export default async function BuildPage({ params }: Params) {
                 </a>
               </>
             ) : null}
-            <CopyLinkButton />
-            <a href={youtubeWatch(build.videoId)} target="_blank" rel="noreferrer" className="btn btn-primary">
-              <YoutubeIcon className="h-4 w-4" />
-              Abrir no YouTube
-              <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
-            </a>
           </div>
         </header>
 
