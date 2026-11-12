@@ -550,12 +550,9 @@ export default function AdminEditor({
         </button>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <button type="button" onClick={save} disabled={busy} className="btn btn-primary btn-sm disabled:opacity-50">
-          {busy ? "Salvando…" : "Salvar"}
-        </button>
-        {status ? <span className="text-xs font-semibold text-positive-deep">{status}</span> : null}
-      </div>
+      {status ? (
+        <p className="mt-4 text-xs font-semibold text-positive-deep">{status}</p>
+      ) : null}
 
       {tab === "site" ? (
         <div className="card-soft mt-5 grid gap-4 p-5 sm:grid-cols-2">
