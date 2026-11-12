@@ -710,29 +710,29 @@ export default function AdminEditor({
         <div
           role="dialog"
           aria-label="Alterações não salvas"
-          className="fixed bottom-5 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-3 rounded-2xl border border-canvas/15 bg-ink px-4 py-3 text-canvas shadow-[0_20px_50px_-12px_rgba(14,15,12,0.45)] animate-fade-up"
+          className="fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 flex-wrap items-center justify-between gap-4 rounded-2xl border border-canvas/15 bg-ink px-6 py-4 text-canvas shadow-[0_24px_60px_-12px_rgba(14,15,12,0.55)]"
         >
-          <span className="flex items-center gap-2 text-xs font-semibold text-canvas/90">
-            <span className="h-2 w-2 rounded-full bg-warning" />
+          <span className="flex items-center gap-2.5 text-sm font-semibold text-canvas">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-warning" />
             Você tem alterações não salvas
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={discard}
               disabled={busy}
-              className="inline-flex h-9 items-center gap-1.5 rounded-3xl px-3 text-xs font-semibold text-canvas/75 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-2 rounded-3xl px-4 text-sm font-semibold text-canvas/80 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
             >
-              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
               Desfazer
             </button>
             <button
               type="button"
               onClick={save}
               disabled={busy}
-              className="btn btn-primary btn-sm disabled:opacity-50"
+              className="btn btn-primary h-10 px-5 text-sm disabled:opacity-50"
             >
-              {busy ? "Salvando…" : "Salvar"}
+              {busy ? "Salvando…" : "Salvar alterações"}
             </button>
           </div>
         </div>
