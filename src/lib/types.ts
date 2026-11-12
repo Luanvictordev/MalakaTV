@@ -42,6 +42,7 @@ export type LinkItem = {
   url: string;
   category: string;
   description: string;
+  logo?: string;
   logoInvert?: boolean;
 };
 

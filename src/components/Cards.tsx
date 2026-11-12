@@ -183,7 +183,7 @@ export function ToolCard({ item }: { item: LinkItem }) {
       className="card-soft group flex gap-3 p-4 transition-colors hover:bg-primary-pale"
     >
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-canvas p-1.5">
-        <ToolLogo name={item.name} url={item.url} invert={item.logoInvert} />
+        <ToolLogo name={item.name} url={item.url} logo={item.logo} invert={item.logoInvert} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">

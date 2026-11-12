@@ -117,6 +117,12 @@ export const collections: CollectionDef[] = [
     fields: [
       { key: "name", label: "Nome do site", type: "text", placeholder: "Awakened PoE Trade" },
       { key: "url", label: "Link", type: "text", placeholder: "https://…" },
+      {
+        key: "logo",
+        label: "Logo (opcional)",
+        type: "image",
+        hint: "Já vem o favicon do site. Suba uma imagem só se quiser trocar.",
+      },
       { key: "category", label: "Categoria", type: "text", placeholder: "Comércio e economia" },
       { key: "description", label: "O que é / pra que serve", type: "textarea" },
       {
@@ -126,7 +132,7 @@ export const collections: CollectionDef[] = [
         hint: "Marque quando a logo for preta e sumir no fundo escuro.",
       },
     ],
-    create: () => ({ name: "", url: "", category: "", description: "", logoInvert: false }),
+    create: () => ({ name: "", url: "", category: "", description: "", logo: "", logoInvert: false }),
   },
 ];
 

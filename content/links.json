@@ -4,97 +4,111 @@
     "url": "https://snosme.github.io/awakened-poe-trade/download",
     "category": "Comércio e economia",
     "description": "Precificar item dentro do jogo com um atalho e buscar no trade oficial. É o primeiro overlay que todo mundo instala.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/snosme-github-io.png"
   },
   {
     "name": "Wealthy Exile",
     "url": "https://wealthyexile.com/stash",
     "category": "Comércio e economia",
     "description": "Lê suas abas do stash e mostra o valor de tudo: gerenciamento de stash e venda em bulk sem planilha.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/wealthyexile-com.png"
   },
   {
     "name": "poe.ninja — builds",
     "url": "https://poe.ninja/poe1/builds",
     "category": "Comércio e economia",
     "description": "O melhor lugar pra ver builds da liga, ideias de upgrade e o preço dos itens. Também serve pra entender a economia.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/poe-ninja.png"
   },
   {
     "name": "PoE Overlay (Overwolf)",
     "url": "https://www.overwolf.com",
     "category": "Comércio e economia",
     "description": "O overlay que eu uso pra precificar itens: mostra preço, compara e ajuda a vender sem sair do jogo.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/overwolf-com.png"
   },
   {
     "name": "poe.re",
     "url": "https://poe.re",
     "category": "Comércio e economia",
     "description": "Gerador de regex pra buscar em NPC e no stash. Acha aquele item específico na aba cheia em segundos.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/poe-re.png"
   },
   {
     "name": "TFT (The Forbidden Trove)",
     "url": "https://discord.com/invite/tftrove",
     "category": "Comunidade",
     "description": "O maior Discord de Path of Exile: venda de bulk, compra de serviços e trocas rápidas com reputação.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/discord-com.png"
   },
   {
     "name": "Exile Leveling",
     "url": "https://heartofphos.github.io/exile-leveling/",
     "category": "Leveling e árvore",
     "description": "Guia de leveling com a ordem de gems, passivas e pontos de skill por ato — acompanha sua progressão.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/heartofphos-github-io.png"
   },
   {
     "name": "Planner de Atlas",
     "url": "https://poeplanner.com/atlas-tree",
     "category": "Leveling e árvore",
     "description": "Organize o gasto dos pontos do atlas antes de colocar no jogo. Ótimo pra testar estratégias de farm.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/poeplanner-com.png"
   },
   {
     "name": "ExileHUD",
     "url": "https://github.com/XileHUD/poe_overlay",
     "category": "Overlays e ferramentas",
     "description": "Overlay que ajuda nos atos: objetivos, localização e dicas aparecendo por cima do jogo.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/github-com.png"
   },
   {
     "name": "Timeless Calculator",
     "url": "https://vilsol.github.io/timeless-jewels",
     "category": "Overlays e ferramentas",
     "description": "Calculadora de joias Timeless: mostra quais pontos a joia altera antes de você gastar divines.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/vilsol-github-io.png"
   },
   {
     "name": "Boss of Exile",
     "url": "https://bossofexile.com",
     "category": "Overlays e ferramentas",
     "description": "Boss tracker: mostra a hora dos bosses do jogo e se estão disponíveis agora.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/bossofexile-com.png"
   },
   {
     "name": "FilterBlade",
     "url": "https://www.filterblade.xyz/?game=Poe1",
     "category": "Filtros",
     "description": "Filtro customizável: escolha o que aparece, cores, sons e o nível de drop. Sincroniza direto com sua conta.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/filterblade-xyz.png"
   },
   {
     "name": "Filtros Neversink",
     "url": "https://br.pathofexile.com/item-filter/ladder/follower",
     "category": "Filtros",
     "description": "Os filtros do Neversink pelo site oficial — siga o filtro da escada e ele atualiza sozinho.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/br-pathofexile-com.png"
   },
   {
     "name": "PoB Archives",
     "url": "https://pobarchives.com/builds/poe",
     "category": "Builds",
     "description": "Compilado de builds com Path of Building de vários criadores — bom pra comparar versões e orçamentos.",
-    "logoInvert": false
+    "logoInvert": false,
+    "logo": "/logos/pobarchives-com.png"
   }
 ]

@@ -64,6 +64,13 @@
   .btn-dark {
     @apply bg-ink text-primary hover:bg-ink-deep;
   }
+  .btn-discord {
+    background-color: #5865f2;
+    color: #ffffff;
+  }
+  .btn-discord:hover {
+    background-color: #4752c4;
+  }
 
   .card {
     @apply rounded-3xl bg-canvas;

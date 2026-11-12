@@ -1,6 +1,5 @@
 import Link from "next/link";
 import LeagueCover from "@/components/LeagueCover";
-import DiscordIcon from "@/components/icons/DiscordIcon";
 import {
   BuildRow,
   BuildWide,
@@ -61,8 +60,15 @@ export default async function HomePage() {
               <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary">
                 Builds da liga
               </Link>
-              <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-dark">
-                <DiscordIcon className="h-4 w-4" />
+              <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/malaka-profile.jpg"
+                  alt=""
+                  width={22}
+                  height={22}
+                  className="h-[22px] w-[22px] rounded-full ring-2 ring-white/70"
+                />
                 Entrar no Discord
               </a>
               <Link href="/ferramentas" className="btn btn-secondary">
@@ -80,49 +86,49 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* games */}
-      <section id="jogos" className="bg-canvas py-16">
+      {/* jogos cobertos — faixa discreta, o foco da página são os guias */}
+      <section id="jogos" className="bg-canvas py-8">
         <div className="mx-auto max-w-[1200px] px-5">
-          <SectionTitle
-            eyebrow="O site"
-            title="Três jogos na fila"
-            description="PoE 1 está no ar. PoE 2 e Hero Siege ficam fechados até a data de lançamento — quando abrir, os guias aparecem aqui do mesmo jeito."
-          />
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-display text-lg font-extrabold tracking-tight text-ink">Jogos cobertos</h2>
+            <p className="text-xs text-mute">A cobertura de cada jogo abre junto com a temporada dele.</p>
+          </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
             {games.map((game) =>
               game.status === "ativo" ? (
                 <Link
                   key={game.slug}
                   href={`/jogos/${game.slug}`}
-                  className="flex flex-col justify-between rounded-3xl bg-ink p-6 text-canvas-soft transition-colors hover:bg-ink-deep"
+                  className="group flex items-center justify-between gap-3 rounded-2xl bg-ink px-4 py-3"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-display text-xl font-extrabold tracking-tight text-canvas">
+                  <span className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    <span className="font-display text-sm font-extrabold tracking-tight text-canvas">
                       {game.name}
-                    </h3>
-                    <span className="badge badge-lime-solid">
-                      <span className="h-1.5 w-1.5 rounded-full bg-ink" />
-                      no ar
                     </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-canvas-soft/70">{game.description}</p>
-                  <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                    {game.releaseLabel}
-                  </p>
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+                    ver guias
+                    <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                  </span>
                 </Link>
               ) : (
-                <div key={game.slug} aria-disabled="true" className="card-soft flex flex-col justify-between p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-display text-xl font-extrabold tracking-tight text-ink/45">
+                <div
+                  key={game.slug}
+                  aria-disabled="true"
+                  className="flex items-center justify-between gap-3 rounded-2xl bg-canvas-soft px-4 py-3"
+                  title={`${game.name} — ${game.releaseLabel}`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-ink/20" />
+                    <span className="font-display text-sm font-extrabold tracking-tight text-ink/60">
                       {game.name}
-                    </h3>
-                    <span className="badge badge-neutral bg-canvas">em breve</span>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-body/70">{game.description}</p>
-                  <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-mute">
+                    </span>
+                  </span>
+                  <span className="truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-mute">
                     {game.releaseLabel}
-                  </p>
+                  </span>
                 </div>
               ),
             )}
@@ -230,8 +236,15 @@ export default async function HomePage() {
                 <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary">
                   Inscrever no canal
                 </a>
-                <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-dark">
-                  <DiscordIcon className="h-4 w-4" />
+                <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/malaka-profile.jpg"
+                    alt=""
+                    width={22}
+                    height={22}
+                    className="h-[22px] w-[22px] rounded-full ring-2 ring-white/70"
+                  />
                   Entrar no Discord
                 </a>
               </div>
