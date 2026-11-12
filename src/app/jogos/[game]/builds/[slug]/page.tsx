@@ -153,7 +153,9 @@ export default async function BuildPage({ params }: Params) {
           <p className="eyebrow">Vídeo do guia</p>
           <p className="mt-2 text-[15px] leading-relaxed text-ink">{build.videoTitle}</p>
           <p className="mt-2 text-sm text-body">
-            PoB, leveling e detalhes estão no vídeo do canal. Esse card é o atalho.
+            {build.pobUrl
+              ? "Leveling e demais detalhes estão disponíveis no vídeo completo."
+              : "PoB, leveling e demais detalhes estão disponíveis no vídeo completo."}
           </p>
         </div>
 

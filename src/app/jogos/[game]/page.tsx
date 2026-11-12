@@ -60,7 +60,7 @@ export default async function GamePage({ params }: Params) {
               {game.releaseLabel}
             </p>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-body">
-              Nada de guia pela metade. Quando começar, os cards entram aqui — build, farm e ferramenta
+              Quando a temporada começar, você encontra aqui as builds, guias de farm e ferramentas
               no mesmo formato do {activeGame?.shortName ?? "PoE 1"}.
             </p>
           </div>
