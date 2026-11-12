@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, ChevronDown, Copy, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 import { collections, siteFields, type Field, type CollectionKey } from "@/lib/adminSchema";
 import { slugify, youtubeThumb } from "@/lib/format";
@@ -313,16 +313,32 @@ function FieldInput({
   }
 
   if (field.type === "bool") {
+    const checked = Boolean(value);
     return (
-      <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-ink/15 bg-canvas px-4 py-3">
-        <input
-          type="checkbox"
-          checked={Boolean(value)}
-          onChange={(event) => onChange(event.target.checked)}
-          className="h-4 w-4 accent-[#9fe870]"
-        />
-        <span className="text-sm font-medium text-ink">{field.label}</span>
-      </label>
+      <div>
+        <label
+          className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+            checked ? "border-ink bg-primary-pale/60" : "border-ink/20 bg-canvas hover:border-ink/40"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            className="peer sr-only"
+          />
+          <span
+            aria-hidden="true"
+            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-primary ${
+              checked ? "border-ink bg-ink text-primary" : "border-ink/30 bg-canvas text-transparent"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+          </span>
+          <span className="text-sm font-semibold text-ink">{field.label}</span>
+        </label>
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
     );
   }
 
