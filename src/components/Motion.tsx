@@ -13,31 +13,10 @@ export function MotionProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function HeroEntrance({
-  children,
-  delay = 0,
-  className,
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  return (
-    <m.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay, ease: EASE_OUT_EXPO }}
-      className={className}
-    >
-      {children}
-    </m.div>
-  );
-}
-
 export function Reveal({
   children,
   delay = 0,
-  y = 12,
+  y = 8,
   className,
 }: {
   children: ReactNode;
@@ -49,8 +28,8 @@ export function Reveal({
     <m.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{ duration: 0.38, delay, ease: EASE_OUT_EXPO }}
+      viewport={{ once: true, amount: 0.08 }}
+      transition={{ duration: 0.42, delay, ease: EASE_OUT_EXPO }}
       className={className}
     >
       {children}
@@ -61,7 +40,7 @@ export function Reveal({
 export function StaggerGroup({
   children,
   className,
-  stagger = 0.045,
+  stagger = 0.035,
 }: {
   children: ReactNode;
   className?: string;
@@ -71,7 +50,7 @@ export function StaggerGroup({
     <m.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
+      viewport={{ once: true, amount: 0.08 }}
       variants={{
         hidden: {},
         visible: {
@@ -97,11 +76,11 @@ export function StaggerItem({
   return (
     <m.div
       variants={{
-        hidden: { opacity: 0, y: 10 },
+        hidden: { opacity: 0, y: 6 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.34, ease: EASE_OUT_EXPO },
+          transition: { duration: 0.36, ease: EASE_OUT_EXPO },
         },
       }}
       className={className}

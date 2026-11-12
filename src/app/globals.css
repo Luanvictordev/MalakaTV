@@ -129,17 +129,19 @@
   }
 }
 
-@keyframes fade-up {
+@keyframes hero-enter {
   from {
     opacity: 0;
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.25s ease-out both;
+.hero-enter {
+  animation: hero-enter 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
