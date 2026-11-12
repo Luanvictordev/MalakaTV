@@ -710,18 +710,19 @@ export default function AdminEditor({
         <div
           role="dialog"
           aria-label="Alterações não salvas"
-          className="fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 flex-wrap items-center justify-between gap-4 rounded-2xl border border-canvas/15 bg-ink px-6 py-4 text-canvas shadow-[0_24px_60px_-12px_rgba(14,15,12,0.55)]"
+          className="fixed bottom-6 left-1/2 z-50 flex w-max max-w-[calc(100%-2rem)] -translate-x-1/2 items-center justify-between gap-4 rounded-2xl border border-canvas/15 bg-ink px-5 py-3.5 text-canvas shadow-[0_24px_60px_-12px_rgba(14,15,12,0.55)]"
         >
-          <span className="flex items-center gap-2.5 text-sm font-semibold text-canvas">
+          <span className="flex items-center gap-2.5 whitespace-nowrap text-sm font-semibold text-canvas">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-warning" />
-            Você tem alterações não salvas
+            <span className="hidden sm:inline">Você tem alterações não salvas</span>
+            <span className="sm:hidden">Alterações não salvas</span>
           </span>
-          <div className="flex items-center gap-2.5">
+          <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
               onClick={discard}
               disabled={busy}
-              className="inline-flex h-10 items-center gap-2 rounded-3xl px-4 text-sm font-semibold text-canvas/80 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-3xl px-3.5 text-sm font-semibold text-canvas/80 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
               Desfazer
@@ -730,7 +731,7 @@ export default function AdminEditor({
               type="button"
               onClick={save}
               disabled={busy}
-              className="btn btn-primary h-10 px-5 text-sm disabled:opacity-50"
+              className="btn btn-primary h-10 whitespace-nowrap px-5 text-sm disabled:opacity-50"
             >
               {busy ? "Salvando…" : "Salvar alterações"}
             </button>
