@@ -8,11 +8,13 @@ export default function CopyLinkButton({
   label = "Copiar link",
   copiedLabel = "Link copiado!",
   variant = "secondary",
+  className = "",
 }: {
   text?: string;
   label?: string;
   copiedLabel?: string;
   variant?: "secondary" | "tertiary";
+  className?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -32,7 +34,7 @@ export default function CopyLinkButton({
     <button
       type="button"
       onClick={copy}
-      className={`btn ${variant === "tertiary" ? "btn-tertiary" : "btn-secondary"}`}
+      className={`btn ${variant === "tertiary" ? "btn-tertiary" : "btn-secondary"} ${className}`.trim()}
     >
       {copied ? (
         <Check className="h-4 w-4 text-positive-deep" aria-hidden="true" />

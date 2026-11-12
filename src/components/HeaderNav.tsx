@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import DiscordIcon from "./icons/DiscordIcon";
 import YoutubeIcon from "./icons/YoutubeIcon";
+import { EASE_OUT_EXPO } from "./Motion";
 import type { Game } from "@/lib/types";
 
 export default function HeaderNav({
@@ -21,6 +23,32 @@ export default function HeaderNav({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      const header = menuRef.current?.closest("header");
+      if (header && !header.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [open]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
@@ -91,9 +119,18 @@ export default function HeaderNav({
         </button>
       </div>
 
-      {open ? (
-        <div className="basis-full border-t border-canvas/10 pt-3 md:hidden">
-          <nav className="flex flex-col gap-2">
+      <AnimatePresence initial={false}>
+        {open ? (
+          <m.div
+            key="mobile-menu"
+            ref={menuRef}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
+            className="basis-full overflow-hidden border-t border-canvas/10 md:hidden"
+          >
+            <nav className="flex flex-col gap-1.5 pb-1 pt-3">
             {games.map((game) =>
               game.status === "ativo" ? (
                 <Link
@@ -101,7 +138,7 @@ export default function HeaderNav({
                   href={`/jogos/${game.slug}`}
                   onClick={() => setOpen(false)}
                   aria-current={isActive(`/jogos/${game.slug}`) ? "page" : undefined}
-                  className={`rounded-xl px-3 py-2 ${linkClass(`/jogos/${game.slug}`)}`}
+                  className={`rounded-xl px-3 py-2.5 ${linkClass(`/jogos/${game.slug}`)}`}
                 >
                   {game.name}
                 </Link>
@@ -109,7 +146,7 @@ export default function HeaderNav({
                 <span
                   key={game.slug}
                   aria-disabled="true"
-                  className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-canvas/35"
+                  className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-canvas/35"
                 >
                   <span>{game.shortName}</span>
                   <span className="rounded-full border border-canvas/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-canvas/40">
@@ -122,7 +159,7 @@ export default function HeaderNav({
               href="/ferramentas"
               onClick={() => setOpen(false)}
               aria-current={isActive("/ferramentas") ? "page" : undefined}
-              className={`rounded-xl px-3 py-2 ${linkClass("/ferramentas")}`}
+              className={`rounded-xl px-3 py-2.5 ${linkClass("/ferramentas")}`}
             >
               Ferramentas
             </Link>
@@ -131,14 +168,15 @@ export default function HeaderNav({
               target="_blank"
               rel="noreferrer"
               onClick={() => setOpen(false)}
-              className="btn btn-primary btn-sm mt-1 w-full sm:hidden"
+              className="btn btn-primary btn-sm mt-1.5 w-full sm:hidden"
             >
               <YoutubeIcon className="h-4 w-4" />
               {handle}
             </a>
-          </nav>
-        </div>
-      ) : null}
+            </nav>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

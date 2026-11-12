@@ -240,9 +240,21 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleBuilds.map((build) => (
-          <BuildCard key={build.slug} build={build} />
-        ))}
+        <AnimatePresence mode="popLayout" initial={false}>
+          {visibleBuilds.map((build) => (
+            <m.div
+              key={build.slug}
+              layout="position"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
+              className="flex min-w-0 [&>*]:w-full"
+            >
+              <BuildCard build={build} />
+            </m.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {!hasFilters && filtered.length > INITIAL_BUILD_LIMIT ? (
@@ -260,10 +272,15 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
       ) : null}
 
       {filtered.length === 0 && (
-        <div className="card-soft mt-10 p-8 text-center">
+        <m.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: EASE_OUT_EXPO }}
+          className="card-soft mt-10 p-8 text-center"
+        >
           <p className="font-display text-lg font-bold text-ink">Nenhuma build encontrada</p>
           <p className="mt-1 text-sm text-body">Tente limpar os filtros ou buscar por outra skill.</p>
-        </div>
+        </m.div>
       )}
     </div>
   );

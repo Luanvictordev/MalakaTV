@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import BackToTop from "@/components/BackToTop";
+import { MotionProvider } from "@/components/Motion";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { getSite } from "@/lib/content";
+import { getGames, getSite } from "@/lib/content";
 import { SITE_URL } from "@/lib/seo";
 
 const display = Manrope({
@@ -21,7 +22,8 @@ const body = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const site = await getSite();
+  const [site, games] = await Promise.all([getSite(), getGames()]);
+  const gameKeywords = games.flatMap((game) => [game.name, game.shortName]);
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -31,17 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: site.description,
     keywords: [
-      "Path of Exile",
-      "Path of Exile 1",
-      "PoE",
-      "builds PoE",
-      "league starter",
+      "ARPG",
+      "builds",
+      "guias",
+      "farms",
       "MalakaTV",
-      "guias Path of Exile",
-      "PoE pt-BR",
-      "farms PoE",
-      "Path of Exile 2",
-      "Hero Siege",
+      "ARPG pt-BR",
+      ...gameKeywords,
     ],
     alternates: {
       canonical: "/",
@@ -94,10 +92,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SiteHeader />
-        <main className="animate-fade-up">{children}</main>
-        <SiteFooter />
-        <BackToTop />
+        <MotionProvider>
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+          <BackToTop />
+        </MotionProvider>
       </body>
     </html>
   );

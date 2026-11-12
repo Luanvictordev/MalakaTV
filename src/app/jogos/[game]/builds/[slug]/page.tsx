@@ -13,10 +13,11 @@ type Params = { params: Promise<{ game: string; slug: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { slug } = await params;
+  const { game: gameSlug, slug } = await params;
   const build = await getBuild(slug);
   if (!build) return { title: "Build não encontrada" };
-  const description = build.note || `Build ${build.name} — guia de Path of Exile.`;
+  const game = (await getGame(build.game)) ?? (await getGame(gameSlug));
+  const description = build.note || `Build ${build.name} — guia de ${game?.name ?? "ARPG"}.`;
   const thumb = build.image || (build.videoId ? youtubeThumb(build.videoId) : undefined);
 
   return {
@@ -62,8 +63,8 @@ export default async function BuildPage({ params }: Params) {
         {
           "@type": "ListItem",
           position: 2,
-          name: game?.shortName ?? "PoE 1",
-          item: `${SITE_URL}/jogos/${game?.slug ?? "poe1"}`,
+          name: game?.shortName ?? gameSlug,
+          item: `${SITE_URL}/jogos/${game?.slug ?? gameSlug}`,
         },
         { "@type": "ListItem", position: 3, name: build.name, item: pageUrl },
       ],
@@ -74,7 +75,7 @@ export default async function BuildPage({ params }: Params) {
             "@context": "https://schema.org",
             "@type": "VideoObject",
             name: build.videoTitle || build.name,
-            description: build.note || `Guia da build ${build.name} para ${game?.name ?? "Path of Exile"}.`,
+            description: build.note || `Guia da build ${build.name} para ${game?.name ?? "ARPG"}.`,
             thumbnailUrl: thumbUrl ? [thumbUrl] : undefined,
             embedUrl: `https://www.youtube-nocookie.com/embed/${build.videoId}`,
             contentUrl: youtubeWatch(build.videoId),
@@ -89,40 +90,56 @@ export default async function BuildPage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-[1000px] px-5 py-10">
+      <div className="mx-auto max-w-[1000px] px-5 py-6 sm:py-10">
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-mute">
-          <Link href={`/jogos/${game?.slug ?? "poe1"}`} className="hover:text-ink">
-            {game?.shortName ?? "PoE 1"}
+          <Link href={`/jogos/${game?.slug ?? gameSlug}`} className="hover:text-ink">
+            {game?.shortName ?? gameSlug}
           </Link>
           <span>/</span>
           <span className="uppercase tracking-[0.12em]">{build.className || "build"}</span>
         </div>
 
-        <header className="mt-4 flex flex-wrap items-end justify-between gap-4">
-          <div>
+        <header className="mt-4 flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between">
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               {build.tier ? <span className="badge badge-lime-solid">{build.tier}</span> : null}
               <span className="badge badge-neutral">
                 {site.leaguePatch} · {site.leagueName}
               </span>
             </div>
-            <h1 className="mt-3 font-display text-[clamp(2rem,4.5vw,3rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-ink">
+            <h1 className="mt-3 font-display text-[clamp(1.85rem,4.5vw,3rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-ink">
               {build.name}
             </h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <a href={youtubeWatch(build.videoId)} target="_blank" rel="noreferrer" className="btn btn-primary">
-              <YoutubeIcon className="h-4 w-4" />
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2.5">
+            <a
+              href={youtubeWatch(build.videoId)}
+              target="_blank"
+              rel="noreferrer"
+              className={`btn btn-primary w-full px-3 sm:w-auto sm:px-6 ${build.pobUrl ? "col-span-2 sm:col-span-1" : ""}`}
+            >
+              <YoutubeIcon className="h-4 w-4 shrink-0" />
               Abrir no YouTube
-              <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
+              <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-75" aria-hidden="true" />
             </a>
-            <CopyLinkButton variant="tertiary" />
+            <CopyLinkButton variant="tertiary" className="w-full px-3 sm:w-auto sm:px-6" />
             {build.pobUrl ? (
               <>
-                <CopyLinkButton text={build.pobUrl} label="Copiar PoB" copiedLabel="PoB copiado!" variant="tertiary" />
-                <a href={build.pobUrl} target="_blank" rel="noreferrer" className="btn btn-tertiary">
+                <CopyLinkButton
+                  text={build.pobUrl}
+                  label="Copiar PoB"
+                  copiedLabel="PoB copiado!"
+                  variant="tertiary"
+                  className="w-full px-3 sm:w-auto sm:px-6"
+                />
+                <a
+                  href={build.pobUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-tertiary col-span-2 w-full px-3 sm:col-span-1 sm:w-auto sm:px-6"
+                >
                   Abrir PoB
-                  <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-75" aria-hidden="true" />
                 </a>
               </>
             ) : null}

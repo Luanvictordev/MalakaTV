@@ -9,8 +9,8 @@ export default async function SiteFooter() {
 
   return (
     <footer className="border-t border-ink/10 bg-canvas">
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-14 sm:grid-cols-[1.5fr_1fr_1fr]">
-        <div>
+      <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-8 px-5 py-10 sm:grid-cols-[1.5fr_1fr_1fr] sm:gap-10 sm:py-14">
+        <div className="col-span-2 sm:col-span-1">
           <p className="flex items-center gap-2.5 font-display text-xl font-extrabold tracking-tight text-ink">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

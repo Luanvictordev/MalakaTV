@@ -6,14 +6,14 @@ import { getGames, getLinks, getSite } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Ferramentas",
   description:
-    "Os sites e overlays que o MalakaTV usa: trade, preço, filtros, atlas, builds e comunidade — cada um explicado.",
+    "Os sites e overlays que o MalakaTV usa: planners, trade, preço, filtros e comunidade — cada um explicado.",
   alternates: {
     canonical: "/ferramentas",
   },
   openGraph: {
     title: "Ferramentas",
     description:
-      "Os sites e overlays que o MalakaTV usa: trade, preço, filtros, atlas, builds e comunidade — cada um explicado.",
+      "Os sites e overlays que o MalakaTV usa: planners, trade, preço, filtros e comunidade — cada um explicado.",
     url: "/ferramentas",
   },
 };
@@ -34,14 +34,14 @@ export default async function FerramentasPage() {
           O que o Malaka usa
         </h1>
         <p className="mt-3 max-w-2xl text-lg leading-relaxed text-body">
-          Os sites e overlays essenciais pro seu league start — cada um explicado e com link direto.
+          Os sites e overlays essenciais pro seu gameplay — cada um explicado e com link direto.
         </p>
 
         <ToolsExplorer links={links} />
 
         <section className="mt-14">
           <div className="flex items-center gap-3">
-            <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Recursos da liga</h2>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">Links em destaque</h2>
             <span className="rule flex-1" />
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">

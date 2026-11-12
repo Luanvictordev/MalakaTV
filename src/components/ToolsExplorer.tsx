@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import { ToolCard } from "./Cards";
+import { EASE_OUT_EXPO } from "./Motion";
 import type { LinkItem } from "@/lib/types";
 
 function anchor(category: string) {
@@ -66,29 +68,57 @@ export default function ToolsExplorer({ links }: { links: LinkItem[] }) {
       </div>
 
       {visibleCategories.length === 0 ? (
-        <div className="card-soft mt-10 p-8 text-center">
+        <m.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: EASE_OUT_EXPO }}
+          className="card-soft mt-10 p-8 text-center"
+        >
           <p className="font-display text-lg font-bold text-ink">Nenhuma ferramenta encontrada</p>
           <p className="mt-1 text-sm text-body">Tente outro termo ou limpe a busca.</p>
-        </div>
+        </m.div>
       ) : (
         <div className="mt-12 space-y-12">
-          {visibleCategories.map((category) => {
-            const items = filtered.filter((item) => item.category === category);
-            return (
-              <section key={category} id={anchor(category)} className="scroll-mt-20">
-                <div className="flex items-center gap-3">
-                  <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">{category}</h2>
-                  <span className="rule flex-1" />
-                  <span className="text-xs font-medium text-mute">{items.length}</span>
-                </div>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {items.map((item) => (
-                    <ToolCard key={item.name} item={item} />
-                  ))}
-                </div>
-              </section>
-            );
-          })}
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visibleCategories.map((category) => {
+              const items = filtered.filter((item) => item.category === category);
+              return (
+                <m.section
+                  key={category}
+                  id={anchor(category)}
+                  layout="position"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.22, ease: EASE_OUT_EXPO }}
+                  className="scroll-mt-20"
+                >
+                  <div className="flex items-center gap-3">
+                    <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">{category}</h2>
+                    <span className="rule flex-1" />
+                    <span className="text-xs font-medium text-mute">{items.length}</span>
+                  </div>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      {items.map((item) => (
+                        <m.div
+                          key={item.name}
+                          layout="position"
+                          initial={{ opacity: 0, scale: 0.98 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.98 }}
+                          transition={{ duration: 0.18, ease: EASE_OUT_EXPO }}
+                          className="flex min-w-0 [&>*]:w-full"
+                        >
+                          <ToolCard item={item} />
+                        </m.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </m.section>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
     </>

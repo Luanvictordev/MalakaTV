@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ImageResponse } from "next/og";
-import { getSite } from "@/lib/content";
+import { getGames, getSite } from "@/lib/content";
 
 export const runtime = "nodejs";
 export const alt = "MalakaTV — Builds, guias e farms";
@@ -15,8 +15,9 @@ function getAvatarDataUrl(): string {
 }
 
 export default async function OpenGraphImage() {
-  const site = await getSite();
+  const [site, games] = await Promise.all([getSite(), getGames()]);
   const avatarSrc = getAvatarDataUrl();
+  const gamesLabel = games.map((game) => game.shortName).join(" · ");
 
   return new ImageResponse(
     (
@@ -62,7 +63,7 @@ export default async function OpenGraphImage() {
               borderRadius: "999px",
             }}
           >
-            {`Liga ${site.leaguePatch} · ${site.leagueName}`}
+            {site.tagline}
           </div>
         </div>
 
@@ -101,7 +102,7 @@ export default async function OpenGraphImage() {
                 color: "#454745",
               }}
             >
-              Builds league starter, farms, atos, atlas e ferramentas essenciais.
+              {site.bio}
             </div>
           </div>
         </div>
@@ -118,7 +119,7 @@ export default async function OpenGraphImage() {
             color: "#454745",
           }}
         >
-          <span>Path of Exile 1 · pt-BR</span>
+          <span>{gamesLabel ? `${gamesLabel} · pt-BR` : "ARPG · pt-BR"}</span>
           <span>{site.handle}</span>
         </div>
       </div>

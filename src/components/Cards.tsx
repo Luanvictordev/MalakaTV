@@ -18,13 +18,13 @@ function Meta({ children }: { children: React.ReactNode }) {
 }
 
 const interactiveCard =
-  "card group transition-all duration-200 hover:-translate-y-0.5 hover:ring-2 hover:ring-primary hover:shadow-[0_12px_28px_-14px_rgba(14,15,12,0.14)]";
+  "card group transition-all duration-200 hover:-translate-y-0.5 hover:ring-2 hover:ring-primary hover:shadow-[0_12px_28px_-14px_rgba(14,15,12,0.14)] active:scale-[0.99]";
 
 export function BuildWide({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
+      className={`${interactiveCard} flex min-w-0 flex-col overflow-hidden p-2.5`}
     >
       <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
@@ -60,7 +60,7 @@ export function BuildRow({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className={`${interactiveCard} flex items-center gap-4 p-2.5`}
+      className={`${interactiveCard} flex min-w-0 items-center gap-3 p-2.5 sm:gap-4`}
     >
       <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
@@ -88,7 +88,7 @@ export function BuildCard({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
+      className={`${interactiveCard} flex min-w-0 flex-col overflow-hidden p-2.5`}
     >
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
@@ -162,23 +162,26 @@ export function FarmRow({ guide }: { guide: Guide }) {
       href={youtubeWatch(guide.videoId)}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center gap-4 border-b border-ink/10 py-3 last:border-b-0"
+      className="group flex min-w-0 items-center gap-3 border-b border-ink/10 py-3 last:border-b-0 sm:gap-4"
     >
       <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-xl bg-canvas-soft sm:w-32">
         <VideoThumb
           videoId={guide.videoId}
           image={guide.image || undefined}
           alt={guide.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate font-display text-base font-extrabold tracking-tight text-ink group-hover:underline">
+        <p className="truncate font-display text-sm font-extrabold tracking-tight text-ink group-hover:underline sm:text-base">
           {guide.title}
         </p>
         <p className="mt-0.5 line-clamp-1 text-xs text-body">{guide.note}</p>
+        {guide.metric ? <span className="badge badge-lime mt-1.5 sm:hidden">{guide.metric}</span> : null}
       </div>
-      <span className="badge badge-lime whitespace-nowrap">{guide.metric}</span>
+      {guide.metric ? (
+        <span className="badge badge-lime hidden whitespace-nowrap sm:inline-flex">{guide.metric}</span>
+      ) : null}
     </a>
   );
 }
@@ -222,10 +225,10 @@ export function SectionTitle({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-5">
+    <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-5">
       <div className="max-w-2xl">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h2 className="mt-2 font-display text-[2rem] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink sm:text-[2.5rem]">
+        <h2 className="mt-2 font-display text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink sm:text-[2.5rem]">
           {title}
         </h2>
         {description ? (

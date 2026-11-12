@@ -49,48 +49,54 @@ export default async function HomePage() {
       <section className="bg-canvas-soft">
         <div className="mx-auto grid max-w-[1200px] items-center gap-6 px-5 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="badge badge-ink">{activeGame.name}</span>
-              {activeGame.releaseLabel ? (
-                <span className="badge badge-lime">{activeGame.releaseLabel}</span>
-              ) : null}
-              {activeGame.releaseDate ? (
-                <span className="text-xs font-medium text-mute">{activeGame.releaseDate}</span>
-              ) : null}
-            </div>
+            <HeroEntrance>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="badge badge-ink">{activeGame.name}</span>
+                {activeGame.releaseLabel ? (
+                  <span className="badge badge-lime">{activeGame.releaseLabel}</span>
+                ) : null}
+                {activeGame.releaseDate ? (
+                  <span className="text-xs font-medium text-mute">{activeGame.releaseDate}</span>
+                ) : null}
+              </div>
+            </HeroEntrance>
 
-            <h1 className="mt-4 font-display text-[clamp(2.15rem,6vw,4.15rem)] font-extrabold leading-[0.96] tracking-[-0.03em] text-ink sm:mt-5">
-              {site.heroTitle}
-            </h1>
-            <p className="mt-3.5 max-w-lg text-base leading-relaxed text-body sm:mt-4 sm:text-lg">
-              {site.heroText}
-            </p>
+            <HeroEntrance delay={0.06}>
+              <h1 className="mt-4 font-display text-[clamp(2.15rem,6vw,4.15rem)] font-extrabold leading-[0.96] tracking-[-0.03em] text-ink sm:mt-5">
+                {site.heroTitle}
+              </h1>
+              <p className="mt-3.5 max-w-lg text-base leading-relaxed text-body sm:mt-4 sm:text-lg">
+                {site.heroText}
+              </p>
+            </HeroEntrance>
 
-            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-7 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-              <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary w-full px-3 sm:w-auto sm:px-6">
-                <Swords className="h-4 w-4 shrink-0" aria-hidden="true" />
-                Builds de {activeGame.shortName}
-              </Link>
-              <a
-                href={site.discord}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-discord w-full px-3 sm:w-auto sm:px-6"
-              >
-                <DiscordIcon className="h-[18px] w-[18px] shrink-0" />
-                Entrar no Discord
-              </a>
-            </div>
+            <HeroEntrance delay={0.12}>
+              <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-7 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+                <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary w-full px-3 sm:w-auto sm:px-6">
+                  <Swords className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  Builds de {activeGame.shortName}
+                </Link>
+                <a
+                  href={site.discord}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-discord w-full px-3 sm:w-auto sm:px-6"
+                >
+                  <DiscordIcon className="h-[18px] w-[18px] shrink-0" />
+                  Entrar no Discord
+                </a>
+              </div>
+            </HeroEntrance>
           </div>
 
-          <div className="min-w-0">
+          <HeroEntrance delay={0.14} className="min-w-0">
             <LeagueCover
               patch={site.leaguePatch}
               name={site.leagueName}
               date={activeGame.releaseDate || site.leagueDate}
               image={activeGame.cover || site.leagueImage || undefined}
             />
-          </div>
+          </HeroEntrance>
         </div>
       </section>
 
@@ -103,19 +109,27 @@ export default async function HomePage() {
       {/* builds */}
       <section className="bg-canvas-soft py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <SectionTitle
-            eyebrow={activeGame.releaseLabel || activeGame.shortName}
-            title="Builds em destaque"
-            description="As que o Malaka indicou primeiro, com vídeo completo e resumo direto."
-            action={{ label: `Todas as ${builds.length} builds →`, href: `/jogos/${activeGame.slug}` }}
-          />
+          <Reveal>
+            <SectionTitle
+              eyebrow={activeGame.releaseLabel || activeGame.shortName}
+              title="Builds em destaque"
+              description="As que o Malaka indicou primeiro, com vídeo completo e resumo direto."
+              action={{ label: `Todas as ${builds.length} builds →`, href: `/jogos/${activeGame.slug}` }}
+            />
+          </Reveal>
           <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.45fr_1fr]">
-            {lead ? <BuildWide build={lead} /> : null}
-            <div className="flex min-w-0 flex-col gap-3">
+            {lead ? (
+              <Reveal delay={0.05} className="flex min-w-0 [&>*]:w-full">
+                <BuildWide build={lead} />
+              </Reveal>
+            ) : null}
+            <StaggerGroup className="flex min-w-0 flex-col gap-3">
               {sideBuilds.map((build) => (
-                <BuildRow key={build.slug} build={build} />
+                <StaggerItem key={build.slug}>
+                  <BuildRow build={build} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerGroup>
           </div>
         </div>
       </section>
@@ -124,59 +138,72 @@ export default async function HomePage() {
       <section className="bg-canvas-soft pb-10 sm:pb-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="rule mb-8 sm:mb-12" />
-          <SectionTitle
-            eyebrow="Comece por aqui"
-            title="Guias pra começar bem"
-            description={`Os guias essenciais pra começar bem no ${activeGame.shortName}.`}
-            action={{ label: "Ver guias →", href: `/jogos/${activeGame.slug}#guias` }}
-          />
-          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2">
+          <Reveal>
+            <SectionTitle
+              eyebrow="Comece por aqui"
+              title="Guias pra começar bem"
+              description={`Os guias essenciais pra começar bem no ${activeGame.shortName}.`}
+              action={{ label: "Ver guias →", href: `/jogos/${activeGame.slug}#guias` }}
+            />
+          </Reveal>
+          <StaggerGroup className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2">
             {guideCards.map((guide) => (
-              <GuideCard key={guide.slug} guide={guide} large />
+              <StaggerItem key={guide.slug} className="flex min-w-0 [&>*]:w-full">
+                <GuideCard guide={guide} large />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </div>
       </section>
 
       {/* farms */}
       <section className="bg-canvas-soft pb-10 sm:pb-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="card p-5 sm:p-7">
-            <SectionTitle
-              eyebrow="Economia"
-              title="FARMs que pagam"
-              description="Farms seguros e rentáveis pra evoluir rápido."
-            />
-            <div className="mt-3">
-              {farms.map((farm) => (
-                <FarmRow key={farm.slug} guide={farm} />
-              ))}
+          <Reveal>
+            <div className="card p-5 sm:p-7">
+              <SectionTitle
+                eyebrow="Economia"
+                title="FARMs que pagam"
+                description="Farms seguros e rentáveis pra evoluir rápido."
+              />
+              <StaggerGroup className="mt-3">
+                {farms.map((farm) => (
+                  <StaggerItem key={farm.slug}>
+                    <FarmRow guide={farm} />
+                  </StaggerItem>
+                ))}
+              </StaggerGroup>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ferramentas */}
       <section className="bg-canvas py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <SectionTitle
-            eyebrow="Ferramentas"
-            title="O que ele usa, explicado"
-            description="Planners, filtros, overlays e comunidade — cada site explicado e com link direto."
-            action={{ label: "Ver todas →", href: "/ferramentas" }}
-          />
-          <div className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
+          <Reveal>
+            <SectionTitle
+              eyebrow="Ferramentas"
+              title="O que ele usa, explicado"
+              description="Planners, filtros, overlays e comunidade — cada site explicado e com link direto."
+              action={{ label: "Ver todas →", href: "/ferramentas" }}
+            />
+          </Reveal>
+          <StaggerGroup className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
             {homeTools.map((item) => (
-              <ToolCard key={item!.name} item={item!} />
+              <StaggerItem key={item!.name} className="flex min-w-0 [&>*]:w-full">
+                <ToolCard item={item!} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </div>
       </section>
 
       {/* canal */}
       <section className="bg-canvas-soft py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="card grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[1.25fr_0.75fr]">
+          <Reveal>
+            <div className="card grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[1.25fr_0.75fr]">
             <div className="min-w-0">
               <p className="eyebrow">O canal</p>
               <div className="mt-3 flex items-center gap-3">
@@ -247,6 +274,7 @@ export default async function HomePage() {
               </ul>
             </div>
           </div>
+          </Reveal>
         </div>
       </section>
     </div>
