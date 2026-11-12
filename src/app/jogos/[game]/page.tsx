@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import BuildsExplorer from "@/components/BuildsExplorer";
 import { FarmRow, GuideCard, SectionTitle } from "@/components/Cards";
 import { getBuilds, getGame, getGames, getGuides, getSite } from "@/lib/content";
@@ -13,9 +16,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { game: slug } = await params;
   const game = await getGame(slug);
   if (!game) return { title: "Jogo não encontrado" };
+  const title = `${game.name} — ${game.releaseLabel}`;
   return {
-    title: `${game.name} — ${game.releaseLabel}`,
+    title,
     description: game.description,
+    alternates: {
+      canonical: `/jogos/${slug}`,
+    },
+    openGraph: {
+      title,
+      description: game.description,
+      url: `/jogos/${slug}`,
+    },
   };
 }
 
@@ -55,9 +67,11 @@ export default async function GamePage({ params }: Params) {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/" className="btn btn-secondary">
-              ← Voltar pra home
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Voltar pra home
             </Link>
             <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary">
+              <YoutubeIcon className="h-4 w-4" />
               Acompanhar no canal
             </a>
           </div>
@@ -71,8 +85,7 @@ export default async function GamePage({ params }: Params) {
       <section className="border-b border-ink/10 bg-canvas">
         <div className="mx-auto max-w-[1200px] px-5 py-12">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="badge badge-lime-solid">no ar</span>
-            <span className="badge badge-neutral">Liga {site.leaguePatch}</span>
+            <span className="badge badge-lime">Liga {site.leaguePatch}</span>
             <span className="text-xs font-medium text-mute">{game.releaseLabel}</span>
           </div>
           <h1 className="mt-4 font-display text-[clamp(2.4rem,5vw,3.75rem)] font-extrabold leading-[0.96] tracking-[-0.03em] text-ink">
@@ -87,10 +100,12 @@ export default async function GamePage({ params }: Params) {
           <SectionTitle
             eyebrow={`League starter ${site.leaguePatch}`}
             title={`${builds.length} builds pra liga`}
-            description="Filtra por classe ou pela tag do que você quer jogar. Clica pra ver o vídeo do guia."
+            description="Filtre por ascendancy, tag ou busque pela skill que você quer jogar."
           />
           <div className="mt-7">
-            <BuildsExplorer builds={builds} />
+            <Suspense fallback={null}>
+              <BuildsExplorer builds={builds} />
+            </Suspense>
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AscendancyAvatar from "./AscendancyAvatar";
 import VideoThumb from "./VideoThumb";
 import ToolLogo from "./ToolLogo";
 import { hostOf, youtubeWatch } from "@/lib/format";
@@ -16,20 +17,24 @@ function Meta({ children }: { children: React.ReactNode }) {
   return <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mute">{children}</span>;
 }
 
+const interactiveCard =
+  "card group transition-all duration-200 hover:-translate-y-0.5 hover:ring-2 hover:ring-primary hover:shadow-[0_12px_28px_-14px_rgba(14,15,12,0.14)]";
+
 export function BuildWide({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className="card group flex flex-col overflow-hidden p-2.5 transition-shadow hover:ring-2 hover:ring-primary"
+      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
     >
       <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={build.videoId}
           image={build.image || undefined}
           alt={build.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <span className="badge badge-neutral absolute left-3 top-3 bg-canvas/90 backdrop-blur">
+          {build.className ? <AscendancyAvatar name={build.className} className="h-4 w-4" /> : null}
           {build.className || "PoE 1"}
         </span>
         {build.tier ? <span className="badge badge-lime-solid absolute right-3 top-3">{build.tier}</span> : null}
@@ -55,18 +60,21 @@ export function BuildRow({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className="card group flex items-center gap-4 p-2.5 transition-shadow hover:ring-2 hover:ring-primary"
+      className={`${interactiveCard} flex items-center gap-4 p-2.5`}
     >
       <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={build.videoId}
           image={build.image || undefined}
           alt={build.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
         />
       </div>
       <div className="min-w-0 pr-2">
-        <Meta>{build.className || "PoE 1"}</Meta>
+        <div className="flex items-center gap-1.5">
+          {build.className ? <AscendancyAvatar name={build.className} className="h-4 w-4" /> : null}
+          <Meta>{build.className || "PoE 1"}</Meta>
+        </div>
         <p className="mt-1 truncate font-display text-base font-extrabold tracking-tight text-ink">
           {build.name}
         </p>
@@ -80,16 +88,17 @@ export function BuildCard({ build }: { build: Build }) {
   return (
     <Link
       href={buildHref(build)}
-      className="card group flex flex-col overflow-hidden p-2.5 transition-shadow hover:ring-2 hover:ring-primary"
+      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
     >
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={build.videoId}
           image={build.image || undefined}
           alt={build.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <span className="badge badge-neutral absolute left-3 top-3 bg-canvas/90 backdrop-blur">
+          {build.className ? <AscendancyAvatar name={build.className} className="h-4 w-4" /> : null}
           {build.className || "PoE 1"}
         </span>
         {build.tier ? <span className="badge badge-lime-solid absolute right-3 top-3">{build.tier}</span> : null}
@@ -118,14 +127,14 @@ export function GuideCard({ guide, large = false }: { guide: Guide; large?: bool
       href={youtubeWatch(guide.videoId)}
       target="_blank"
       rel="noreferrer"
-      className="card group flex flex-col overflow-hidden p-2.5 transition-shadow hover:ring-2 hover:ring-primary"
+      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
     >
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={guide.videoId}
           image={guide.image || undefined}
           alt={guide.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <span
           className={`badge absolute left-3 top-3 ${isFarm ? "badge-lime-solid" : "badge-ink"}`}
@@ -180,7 +189,7 @@ export function ToolCard({ item }: { item: LinkItem }) {
       href={item.url}
       target="_blank"
       rel="noreferrer"
-      className="card-soft group flex gap-3 p-4 transition-colors hover:bg-primary-pale"
+      className="card-soft group flex gap-3 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-pale hover:shadow-[0_12px_28px_-14px_rgba(14,15,12,0.12)]"
     >
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-canvas p-1.5">
         <ToolLogo name={item.name} url={item.url} logo={item.logo} invert={item.logoInvert} />

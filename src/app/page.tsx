@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Swords } from "lucide-react";
+import DiscordIcon from "@/components/icons/DiscordIcon";
+import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import LeagueCover from "@/components/LeagueCover";
 import {
   BuildRow,
@@ -58,22 +61,13 @@ export default async function HomePage() {
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary">
+                <Swords className="h-4 w-4" aria-hidden="true" />
                 Builds da liga
               </Link>
               <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/malaka-profile.jpg"
-                  alt=""
-                  width={22}
-                  height={22}
-                  className="h-[22px] w-[22px] rounded-full ring-2 ring-white/70"
-                />
+                <DiscordIcon className="h-[18px] w-[18px]" />
                 Entrar no Discord
               </a>
-              <Link href="/ferramentas" className="btn btn-secondary">
-                Ferramentas
-              </Link>
             </div>
           </div>
 
@@ -86,55 +80,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* jogos cobertos — faixa discreta, o foco da página são os guias */}
-      <section id="jogos" className="bg-canvas py-8">
+      <div className="bg-canvas-soft">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="font-display text-lg font-extrabold tracking-tight text-ink">Jogos cobertos</h2>
-            <p className="text-xs text-mute">A cobertura de cada jogo abre junto com a temporada dele.</p>
-          </div>
-
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {games.map((game) =>
-              game.status === "ativo" ? (
-                <Link
-                  key={game.slug}
-                  href={`/jogos/${game.slug}`}
-                  className="group flex items-center justify-between gap-3 rounded-2xl bg-ink px-4 py-3"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    <span className="font-display text-sm font-extrabold tracking-tight text-canvas">
-                      {game.name}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
-                    ver guias
-                    <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                  </span>
-                </Link>
-              ) : (
-                <div
-                  key={game.slug}
-                  aria-disabled="true"
-                  className="flex items-center justify-between gap-3 rounded-2xl bg-canvas-soft px-4 py-3"
-                  title={`${game.name} — ${game.releaseLabel}`}
-                >
-                  <span className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-ink/20" />
-                    <span className="font-display text-sm font-extrabold tracking-tight text-ink/60">
-                      {game.name}
-                    </span>
-                  </span>
-                  <span className="truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-mute">
-                    {game.releaseLabel}
-                  </span>
-                </div>
-              ),
-            )}
-          </div>
+          <div className="rule" />
         </div>
-      </section>
+      </div>
 
       {/* builds */}
       <section className="bg-canvas-soft py-16">
@@ -181,7 +131,7 @@ export default async function HomePage() {
             <SectionTitle
               eyebrow="Economia"
               title="FARMs que pagam na primeira semana"
-              description="Farms seguros pra começar — não quer dizer que são ruins depois."
+              description="Farms seguros e rentáveis pra começar a liga com o pé direito."
             />
             <div className="mt-3">
               {farms.map((farm) => (
@@ -198,7 +148,7 @@ export default async function HomePage() {
           <SectionTitle
             eyebrow="Ferramentas"
             title="O que ele usa, explicado"
-            description="Trade, preço, filtro, atlas e comunidade — cada site com o logo e o que faz."
+            description="Trade, preço, filtro, atlas e comunidade — cada site explicado e com link direto."
             action={{ label: "Ver todas →", href: "/ferramentas" }}
           />
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -234,17 +184,11 @@ export default async function HomePage() {
               <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-body">{site.bio}</p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary">
+                  <YoutubeIcon className="h-4 w-4" />
                   Inscrever no canal
                 </a>
                 <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/malaka-profile.jpg"
-                    alt=""
-                    width={22}
-                    height={22}
-                    className="h-[22px] w-[22px] rounded-full ring-2 ring-white/70"
-                  />
+                  <DiscordIcon className="h-[18px] w-[18px]" />
                   Entrar no Discord
                 </a>
               </div>

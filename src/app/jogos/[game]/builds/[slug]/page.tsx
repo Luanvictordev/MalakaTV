@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ExternalLink } from "lucide-react";
+import CopyLinkButton from "@/components/CopyLinkButton";
+import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import { BuildCard, Tag } from "@/components/Cards";
-import { getBuild, getBuilds, getGame, getSite, youtubeWatch } from "@/lib/content";
+import { getBuild, getBuilds, getGame, getSite, youtubeThumb, youtubeWatch } from "@/lib/content";
+import { SITE_URL } from "@/lib/seo";
 
 type Params = { params: Promise<{ game: string; slug: string }> };
 
@@ -12,9 +16,26 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const build = await getBuild(slug);
   if (!build) return { title: "Build não encontrada" };
+  const description = build.note || `Build ${build.name} — guia de Path of Exile.`;
+  const thumb = build.image || (build.videoId ? youtubeThumb(build.videoId) : undefined);
+
   return {
     title: build.name,
-    description: build.note || `Build ${build.name} — guia de Path of Exile.`,
+    description,
+    alternates: {
+      canonical: `/jogos/${build.game}/builds/${build.slug}`,
+    },
+    openGraph: {
+      title: build.name,
+      description,
+      type: "article",
+      url: `/jogos/${build.game}/builds/${build.slug}`,
+      images: thumb ? [thumb] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: thumb ? [thumb] : undefined,
+    },
   };
 }
 
@@ -29,8 +50,45 @@ export default async function BuildPage({ params }: Params) {
     .filter((item) => item.slug !== build.slug && item.className && item.className === build.className)
     .slice(0, 3);
 
+  const pageUrl = `${SITE_URL}/jogos/${build.game}/builds/${build.slug}`;
+  const thumbUrl = build.image || (build.videoId ? youtubeThumb(build.videoId) : undefined);
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Início", item: SITE_URL },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: game?.shortName ?? "PoE 1",
+          item: `${SITE_URL}/jogos/${game?.slug ?? "poe1"}`,
+        },
+        { "@type": "ListItem", position: 3, name: build.name, item: pageUrl },
+      ],
+    },
+    ...(build.videoId
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            name: build.videoTitle || build.name,
+            description: build.note || `Guia da build ${build.name} para ${game?.name ?? "Path of Exile"}.`,
+            thumbnailUrl: thumbUrl ? [thumbUrl] : undefined,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${build.videoId}`,
+            contentUrl: youtubeWatch(build.videoId),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <div className="bg-canvas">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-[1000px] px-5 py-10">
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-mute">
           <Link href={`/jogos/${game?.slug ?? "poe1"}`} className="hover:text-ink">
@@ -52,9 +110,23 @@ export default async function BuildPage({ params }: Params) {
               {build.name}
             </h1>
           </div>
-          <a href={youtubeWatch(build.videoId)} target="_blank" rel="noreferrer" className="btn btn-primary">
-            Abrir no YouTube ↗
-          </a>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {build.pobUrl ? (
+              <>
+                <CopyLinkButton text={build.pobUrl} label="Copiar PoB" copiedLabel="PoB copiado!" variant="tertiary" />
+                <a href={build.pobUrl} target="_blank" rel="noreferrer" className="btn btn-tertiary">
+                  Abrir PoB
+                  <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
+                </a>
+              </>
+            ) : null}
+            <CopyLinkButton />
+            <a href={youtubeWatch(build.videoId)} target="_blank" rel="noreferrer" className="btn btn-primary">
+              <YoutubeIcon className="h-4 w-4" />
+              Abrir no YouTube
+              <ExternalLink className="h-3.5 w-3.5 opacity-75" aria-hidden="true" />
+            </a>
+          </div>
         </header>
 
         {build.note ? <p className="mt-4 max-w-2xl text-lg leading-relaxed text-body">{build.note}</p> : null}

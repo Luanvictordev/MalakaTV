@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DiscordIcon from "./icons/DiscordIcon";
+import YoutubeIcon from "./icons/YoutubeIcon";
 import { getGames, getSite } from "@/lib/content";
 
 export default async function SiteFooter() {
@@ -24,6 +25,7 @@ export default async function SiteFooter() {
           </p>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-body">{site.bio}</p>
           <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm mt-5">
+            <YoutubeIcon className="h-4 w-4" />
             {site.handle}
           </a>
         </div>
@@ -77,9 +79,20 @@ export default async function SiteFooter() {
 
       <div className="mx-auto max-w-[1200px] px-5 pb-10">
         <div className="rule" />
-        <p className="mt-4 text-xs text-mute">
-          Conteúdo independente de fã. Path of Exile e Hero Siege são marcas de seus respectivos donos.
-        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-mute">
+          <p>Conteúdo independente de fã. Path of Exile e Hero Siege são marcas de seus respectivos donos.</p>
+          <p>
+            Feito por{" "}
+            <a
+              href="https://github.com/Luanvictordev"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-ink/80 underline-offset-4 hover:text-ink hover:underline"
+            >
+              Luan Victor
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

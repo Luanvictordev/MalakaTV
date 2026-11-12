@@ -21,6 +21,7 @@ export type Build = {
   videoId: string;
   videoTitle: string;
   image: string;
+  pobUrl?: string;
   featured: boolean;
   tier: string;
 };
