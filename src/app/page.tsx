@@ -3,6 +3,7 @@ import { Swords } from "lucide-react";
 import DiscordIcon from "@/components/icons/DiscordIcon";
 import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import LeagueCover from "@/components/LeagueCover";
+import { HeroEntrance, Reveal, StaggerGroup, StaggerItem } from "@/components/Motion";
 import {
   BuildRow,
   BuildWide,
@@ -46,37 +47,50 @@ export default async function HomePage() {
     <div>
       {/* hero band */}
       <section className="bg-canvas-soft">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-10 px-5 py-12 lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
-          <div>
+        <div className="mx-auto grid max-w-[1200px] items-center gap-6 px-5 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="badge badge-ink">Path of Exile 1</span>
-              <span className="badge badge-lime">Liga {site.leaguePatch}</span>
-              <span className="text-xs font-medium text-mute">começa {site.leagueDate}</span>
+              <span className="badge badge-ink">{activeGame.name}</span>
+              {activeGame.releaseLabel ? (
+                <span className="badge badge-lime">{activeGame.releaseLabel}</span>
+              ) : null}
+              {activeGame.releaseDate ? (
+                <span className="text-xs font-medium text-mute">{activeGame.releaseDate}</span>
+              ) : null}
             </div>
 
-            <h1 className="mt-5 font-display text-[clamp(2.6rem,6vw,4.15rem)] font-extrabold leading-[0.94] tracking-[-0.03em] text-ink">
+            <h1 className="mt-4 font-display text-[clamp(2.15rem,6vw,4.15rem)] font-extrabold leading-[0.96] tracking-[-0.03em] text-ink sm:mt-5">
               {site.heroTitle}
             </h1>
-            <p className="mt-4 max-w-lg text-lg leading-relaxed text-body">{site.heroText}</p>
+            <p className="mt-3.5 max-w-lg text-base leading-relaxed text-body sm:mt-4 sm:text-lg">
+              {site.heroText}
+            </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary">
-                <Swords className="h-4 w-4" aria-hidden="true" />
-                Builds da liga
+            <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-7 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+              <Link href={`/jogos/${activeGame.slug}`} className="btn btn-primary w-full px-3 sm:w-auto sm:px-6">
+                <Swords className="h-4 w-4 shrink-0" aria-hidden="true" />
+                Builds de {activeGame.shortName}
               </Link>
-              <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
-                <DiscordIcon className="h-[18px] w-[18px]" />
+              <a
+                href={site.discord}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-discord w-full px-3 sm:w-auto sm:px-6"
+              >
+                <DiscordIcon className="h-[18px] w-[18px] shrink-0" />
                 Entrar no Discord
               </a>
             </div>
           </div>
 
-          <LeagueCover
-            patch={site.leaguePatch}
-            name={site.leagueName}
-            date={site.leagueDate}
-            image={site.leagueImage || undefined}
-          />
+          <div className="min-w-0">
+            <LeagueCover
+              patch={site.leaguePatch}
+              name={site.leagueName}
+              date={activeGame.releaseDate || site.leagueDate}
+              image={activeGame.cover || site.leagueImage || undefined}
+            />
+          </div>
         </div>
       </section>
 
@@ -87,17 +101,17 @@ export default async function HomePage() {
       </div>
 
       {/* builds */}
-      <section className="bg-canvas-soft py-16">
+      <section className="bg-canvas-soft py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <SectionTitle
-            eyebrow={`League starter ${site.leaguePatch}`}
+            eyebrow={activeGame.releaseLabel || activeGame.shortName}
             title="Builds em destaque"
-            description="As que o Malaka indicou primeiro, com vídeo do leveling ao endgame."
+            description="As que o Malaka indicou primeiro, com vídeo completo e resumo direto."
             action={{ label: `Todas as ${builds.length} builds →`, href: `/jogos/${activeGame.slug}` }}
           />
-          <div className="mt-8 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
+          <div className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.45fr_1fr]">
             {lead ? <BuildWide build={lead} /> : null}
-            <div className="flex flex-col gap-3">
+            <div className="flex min-w-0 flex-col gap-3">
               {sideBuilds.map((build) => (
                 <BuildRow key={build.slug} build={build} />
               ))}
@@ -107,16 +121,16 @@ export default async function HomePage() {
       </section>
 
       {/* guias */}
-      <section className="bg-canvas-soft pb-16">
+      <section className="bg-canvas-soft pb-10 sm:pb-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="rule mb-12" />
+          <div className="rule mb-8 sm:mb-12" />
           <SectionTitle
             eyebrow="Comece por aqui"
-            title="Atos e Atlas sem sofrimento"
-            description="Os dois guias que resolvem a primeira semana de liga."
-            action={{ label: "Ver guias →", href: `/jogos/${activeGame.slug}` }}
+            title="Guias pra começar bem"
+            description={`Os guias essenciais pra começar bem no ${activeGame.shortName}.`}
+            action={{ label: "Ver guias →", href: `/jogos/${activeGame.slug}#guias` }}
           />
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2">
             {guideCards.map((guide) => (
               <GuideCard key={guide.slug} guide={guide} large />
             ))}
@@ -125,13 +139,13 @@ export default async function HomePage() {
       </section>
 
       {/* farms */}
-      <section className="bg-canvas-soft pb-16">
+      <section className="bg-canvas-soft pb-10 sm:pb-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="card p-5 sm:p-7">
             <SectionTitle
               eyebrow="Economia"
-              title="FARMs que pagam na primeira semana"
-              description="Farms seguros e rentáveis pra começar a liga com o pé direito."
+              title="FARMs que pagam"
+              description="Farms seguros e rentáveis pra evoluir rápido."
             />
             <div className="mt-3">
               {farms.map((farm) => (
@@ -143,15 +157,15 @@ export default async function HomePage() {
       </section>
 
       {/* ferramentas */}
-      <section className="bg-canvas py-16">
+      <section className="bg-canvas py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <SectionTitle
             eyebrow="Ferramentas"
             title="O que ele usa, explicado"
-            description="Trade, preço, filtro, atlas e comunidade — cada site explicado e com link direto."
+            description="Planners, filtros, overlays e comunidade — cada site explicado e com link direto."
             action={{ label: "Ver todas →", href: "/ferramentas" }}
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
             {homeTools.map((item) => (
               <ToolCard key={item!.name} item={item!} />
             ))}
@@ -160,10 +174,10 @@ export default async function HomePage() {
       </section>
 
       {/* canal */}
-      <section className="bg-canvas-soft py-16">
+      <section className="bg-canvas-soft py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="card grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.25fr_0.75fr]">
-            <div>
+          <div className="card grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[1.25fr_0.75fr]">
+            <div className="min-w-0">
               <p className="eyebrow">O canal</p>
               <div className="mt-3 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -174,7 +188,7 @@ export default async function HomePage() {
                   height={56}
                   className="h-14 w-14 rounded-full object-cover"
                 />
-                <p className="flex items-center gap-2 font-display text-[2.25rem] font-extrabold leading-none tracking-[-0.03em] text-ink">
+                <p className="flex items-center gap-2 font-display text-3xl font-extrabold leading-none tracking-[-0.03em] text-ink sm:text-[2.25rem]">
                   Malaka
                   <span className="rounded-full bg-primary px-2.5 py-1 text-[13px] font-bold tracking-[0.04em] text-ink">
                     TV
@@ -182,13 +196,23 @@ export default async function HomePage() {
                 </p>
               </div>
               <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-body">{site.bio}</p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary">
-                  <YoutubeIcon className="h-4 w-4" />
+              <div className="mt-6 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+                <a
+                  href={site.youtube}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-primary w-full px-2.5 text-[13px] sm:w-auto sm:px-6 sm:text-[15px]"
+                >
+                  <YoutubeIcon className="h-4 w-4 shrink-0" />
                   Inscrever no canal
                 </a>
-                <a href={site.discord} target="_blank" rel="noreferrer" className="btn btn-discord">
-                  <DiscordIcon className="h-[18px] w-[18px]" />
+                <a
+                  href={site.discord}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-discord w-full px-2.5 text-[13px] sm:w-auto sm:px-6 sm:text-[15px]"
+                >
+                  <DiscordIcon className="h-[18px] w-[18px] shrink-0" />
                   Entrar no Discord
                 </a>
               </div>
@@ -202,8 +226,8 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="card-soft p-5">
-              <p className="eyebrow">Recursos da liga</p>
+            <div className="card-soft min-w-0 p-5">
+              <p className="eyebrow">Links em destaque</p>
               <ul className="mt-3 divide-y divide-ink/10">
                 {site.spotlights.map((spotlight) => (
                   <li key={spotlight.label}>

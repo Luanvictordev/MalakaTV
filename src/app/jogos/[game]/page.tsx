@@ -37,8 +37,6 @@ export default async function GamePage({ params }: Params) {
   if (!game) notFound();
 
   const site = await getSite();
-  const games = await getGames();
-  const activeGame = games.find((item) => item.status === "ativo");
   const builds = await getBuilds(game.slug);
   const guides = await getGuides(game.slug);
   const guideCards = guides.filter((guide) => guide.kind === "guia");
@@ -61,17 +59,17 @@ export default async function GamePage({ params }: Params) {
             </p>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-body">
               Quando a temporada começar, você encontra aqui as builds, guias de farm e ferramentas
-              no mesmo formato do {activeGame?.shortName ?? "PoE 1"}.
+              no mesmo formato dos outros jogos do canal.
             </p>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/" className="btn btn-secondary">
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          <div className="mt-8 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
+            <Link href="/" className="btn btn-secondary w-full px-3 sm:w-auto sm:px-6">
+              <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
               Voltar pra home
             </Link>
-            <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary">
-              <YoutubeIcon className="h-4 w-4" />
+            <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary w-full px-3 sm:w-auto sm:px-6">
+              <YoutubeIcon className="h-4 w-4 shrink-0" />
               Acompanhar no canal
             </a>
           </div>
@@ -83,24 +81,39 @@ export default async function GamePage({ params }: Params) {
   return (
     <div>
       <section className="border-b border-ink/10 bg-canvas">
-        <div className="mx-auto max-w-[1200px] px-5 py-12">
+        <div className="mx-auto max-w-[1200px] px-5 py-8 sm:py-12">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="badge badge-lime">Liga {site.leaguePatch}</span>
-            <span className="text-xs font-medium text-mute">{game.releaseLabel}</span>
+            {game.releaseLabel ? <span className="badge badge-lime">{game.releaseLabel}</span> : null}
+            {game.releaseDate ? <span className="text-xs font-medium text-mute">{game.releaseDate}</span> : null}
           </div>
           <h1 className="mt-4 font-display text-[clamp(2.4rem,5vw,3.75rem)] font-extrabold leading-[0.96] tracking-[-0.03em] text-ink">
             {game.name}
           </h1>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-body">{game.description}</p>
+          <nav aria-label="Seções da página" className="mt-6 flex flex-wrap gap-2">
+            <a href="#builds" className="btn btn-tertiary btn-sm">
+              Builds ({builds.length})
+            </a>
+            {guideCards.length > 0 ? (
+              <a href="#guias" className="btn btn-tertiary btn-sm">
+                Guias ({guideCards.length})
+              </a>
+            ) : null}
+            {farms.length > 0 ? (
+              <a href="#farms" className="btn btn-tertiary btn-sm">
+                FARMs ({farms.length})
+              </a>
+            ) : null}
+          </nav>
         </div>
       </section>
 
-      <section className="bg-canvas-soft py-12">
+      <section id="builds" className="scroll-mt-20 bg-canvas-soft py-12">
         <div className="mx-auto max-w-[1200px] px-5">
           <SectionTitle
-            eyebrow={`League starter ${site.leaguePatch}`}
-            title={`${builds.length} builds pra liga`}
-            description="Filtre por ascendancy, tag ou busque pela skill que você quer jogar."
+            eyebrow={game.releaseLabel || game.shortName}
+            title={`${builds.length} builds disponíveis`}
+            description="Filtre por classe, tag ou busque pela skill que você quer jogar."
           />
           <div className="mt-7">
             <Suspense fallback={null}>
@@ -111,12 +124,12 @@ export default async function GamePage({ params }: Params) {
       </section>
 
       {guideCards.length > 0 ? (
-        <section className="border-t border-ink/10 bg-canvas py-12">
+        <section id="guias" className="scroll-mt-20 border-t border-ink/10 bg-canvas py-12">
           <div className="mx-auto max-w-[1200px] px-5">
             <SectionTitle
               eyebrow="Fundamentos"
               title="Guias"
-              description="Atos e atlas explicados pra quem está começando a liga."
+              description={`Guias essenciais pra começar bem no ${game.shortName}.`}
             />
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {guideCards.map((guide) => (
@@ -128,12 +141,12 @@ export default async function GamePage({ params }: Params) {
       ) : null}
 
       {farms.length > 0 ? (
-        <section className="bg-canvas-soft py-12">
+        <section id="farms" className="scroll-mt-20 bg-canvas-soft py-12">
           <div className="mx-auto max-w-[1200px] px-5">
             <SectionTitle
               eyebrow="Economia"
               title="FARMs que pagam"
-              description="Farms seguros pra primeira semana da liga."
+              description="Farms seguros e rentáveis pra evoluir no jogo."
             />
             <div className="card mt-7 p-5">
               {farms.map((farm) => (

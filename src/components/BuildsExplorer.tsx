@@ -2,9 +2,11 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { ChevronDown, Search, X } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import AscendancyAvatar from "./AscendancyAvatar";
 import { BuildCard } from "./Cards";
+import { EASE_OUT_EXPO } from "./Motion";
 import TagSelect from "./TagSelect";
 import { uniqueClasses, uniqueTags } from "@/lib/format";
 import type { Build } from "@/lib/types";
@@ -19,6 +21,8 @@ const BASE_CLASSES: { label: string; ascendancies: string[] }[] = [
   { label: "Scion", ascendancies: ["Ascendant"] },
 ];
 
+const INITIAL_BUILD_LIMIT = 9;
+
 export default function BuildsExplorer({ builds }: { builds: Build[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -27,6 +31,8 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [selectedClass, setSelectedClass] = useState(() => searchParams.get("classe") ?? "Todas");
   const [selectedTag, setSelectedTag] = useState(() => searchParams.get("tag") ?? "Todas");
+  const [classesOpen, setClassesOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const syncUrl = useCallback(
     (next: { q: string; classe: string; tag: string }) => {
@@ -105,6 +111,8 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
 
   const hasFilters = Boolean(query || selectedClass !== "Todas" || selectedTag !== "Todas");
   const hasClassFilter = selectedClass !== "Todas";
+  const isCollapsed = !hasFilters && !showAll && filtered.length > INITIAL_BUILD_LIMIT;
+  const visibleBuilds = isCollapsed ? filtered.slice(0, INITIAL_BUILD_LIMIT) : filtered;
 
   return (
     <div>
@@ -136,10 +144,29 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
           <TagSelect value={selectedTag} options={tags} onChange={updateTag} />
         </div>
 
-        <div className="mt-5">
+        <div className="mt-4 sm:mt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <span className="eyebrow">Classes & Ascendancies</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setClassesOpen((current) => !current)}
+                aria-expanded={classesOpen}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-canvas-soft px-3 py-1.5 text-left sm:hidden"
+              >
+                <span className="eyebrow text-ink">Classes</span>
+                {hasClassFilter ? (
+                  <span className="rounded-full bg-ink px-2 py-0.5 text-[10px] font-semibold text-primary">
+                    {selectedClass}
+                  </span>
+                ) : null}
+                <ChevronDown
+                  className={`h-3.5 w-3.5 text-mute transition-transform duration-150 ${
+                    classesOpen ? "rotate-180 text-ink" : ""
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+              <span className="eyebrow hidden sm:inline">Classes & Ascendancies</span>
               {hasClassFilter ? (
                 <button
                   type="button"
@@ -166,7 +193,7 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
             </div>
           </div>
 
-          <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={`${classesOpen ? "grid" : "hidden"} mt-3 gap-2.5 sm:grid sm:grid-cols-2 lg:grid-cols-3`}>
             {groupedClasses.map((group) => (
               <div key={group.label} className="rounded-2xl bg-canvas-soft/80 p-2.5">
                 <p className="px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-mute">
@@ -213,10 +240,24 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((build) => (
+        {visibleBuilds.map((build) => (
           <BuildCard key={build.slug} build={build} />
         ))}
       </div>
+
+      {!hasFilters && filtered.length > INITIAL_BUILD_LIMIT ? (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((current) => !current)}
+            className="btn btn-secondary"
+          >
+            {showAll
+              ? "Mostrar menos builds"
+              : `Mostrar todas as ${filtered.length} builds`}
+          </button>
+        </div>
+      ) : null}
 
       {filtered.length === 0 && (
         <div className="card-soft mt-10 p-8 text-center">
