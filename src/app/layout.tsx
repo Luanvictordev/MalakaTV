@@ -22,7 +22,6 @@ const body = Inter({
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSite();
-  const ogImage = site.leagueImage || "/images/malaka-profile.jpg";
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -65,11 +64,9 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "pt_BR",
       siteName: site.name,
       url: SITE_URL,
-      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
-      images: [ogImage],
     },
   };
 }
