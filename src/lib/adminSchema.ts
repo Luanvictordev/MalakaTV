@@ -1,4 +1,4 @@
-export type FieldType = "text" | "textarea" | "tags" | "bool" | "image" | "spotlight" | "select";
+export type FieldType = "text" | "textarea" | "tags" | "bool" | "image" | "spotlight" | "select" | "youtube" | "ascendancy";
 
 export type Field = {
   key: string;
@@ -7,6 +7,7 @@ export type Field = {
   placeholder?: string;
   hint?: string;
   options?: string[];
+  advanced?: boolean;
 };
 
 export type CollectionKey = "games" | "builds" | "guias" | "links";
@@ -31,12 +32,12 @@ export const collections: CollectionDef[] = [
     fields: [
       { key: "name", label: "Nome", type: "text", placeholder: "Path of Exile 2" },
       { key: "shortName", label: "Nome curto", type: "text", placeholder: "PoE 2" },
-      { key: "slug", label: "Slug", type: "text", placeholder: "poe2", hint: "poe1, poe2, hero-siege. É o que liga builds e guias ao jogo." },
+      { key: "slug", label: "Slug", type: "text", placeholder: "poe2", hint: "poe1, poe2, hero-siege. É o que liga builds e guias ao jogo.", advanced: true },
       { key: "status", label: "Status", type: "select", options: ["ativo", "em-breve"], hint: "em-breve deixa a seção desativada no site." },
       { key: "releaseLabel", label: "Etiqueta de lançamento", type: "text", placeholder: "Free-to-play em 11 de dezembro" },
-      { key: "releaseDate", label: "Data curta", type: "text", placeholder: "dezembro" },
+      { key: "releaseDate", label: "Data curta", type: "text", placeholder: "dezembro", advanced: true },
       { key: "description", label: "Descrição", type: "textarea" },
-      { key: "cover", label: "Capa (opcional)", type: "image" },
+      { key: "cover", label: "Capa (opcional)", type: "image", advanced: true },
     ],
     create: () => ({
       slug: "",
@@ -55,18 +56,18 @@ export const collections: CollectionDef[] = [
     titleKey: "name",
     subtitleKey: "className",
     fields: [
-      { key: "game", label: "Jogo", type: "select", options: gameOptions, hint: "Onde esse card aparece." },
+      { key: "game", label: "Jogo", type: "select", options: gameOptions },
       { key: "name", label: "Nome da build", type: "text", placeholder: "Frost Blades Trickster" },
-      { key: "slug", label: "Link (slug)", type: "text", hint: "Deixe vazio pra gerar do nome." },
-      { key: "className", label: "Classe / ascendancy", type: "text", placeholder: "Trickster" },
-      { key: "tags", label: "Tags", type: "tags", hint: "Separe por vírgula: League Starter, Melee, Tank" },
-      { key: "tier", label: "Tier (opcional)", type: "text", placeholder: "S+" },
-      { key: "note", label: "Comentário", type: "textarea" },
-      { key: "videoId", label: "ID do vídeo no YouTube", type: "text", placeholder: "FMtdXWFo0o8", hint: "A parte depois de watch?v=." },
-      { key: "videoTitle", label: "Título do vídeo", type: "text" },
+      { key: "videoId", label: "Vídeo do YouTube", type: "youtube", placeholder: "Cole o link do YouTube ou o ID" },
+      { key: "className", label: "Classe / ascendancy", type: "ascendancy", placeholder: "Trickster" },
       { key: "pobUrl", label: "Link do PoB (opcional)", type: "text", placeholder: "https://pobb.in/…" },
-      { key: "image", label: "Foto do card (opcional)", type: "image", hint: "Se vazio, usa a thumb do vídeo." },
+      { key: "tags", label: "Tags", type: "tags" },
+      { key: "note", label: "Comentário", type: "textarea" },
       { key: "featured", label: "Destacar na home", type: "bool" },
+      { key: "tier", label: "Tier (opcional)", type: "text", placeholder: "S+", advanced: true },
+      { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
+      { key: "image", label: "Foto customizada (opcional)", type: "image", hint: "Se vazio, usa a thumb do vídeo.", advanced: true },
+      { key: "slug", label: "Link da página (slug)", type: "text", hint: "Gerado automaticamente pelo nome.", advanced: true },
     ],
     create: () => ({
       game: "poe1",
@@ -90,14 +91,14 @@ export const collections: CollectionDef[] = [
     subtitleKey: "kind",
     fields: [
       { key: "game", label: "Jogo", type: "select", options: gameOptions },
-      { key: "title", label: "Título", type: "text", placeholder: "Guia dos Atos para novatos" },
-      { key: "slug", label: "Link (slug)", type: "text" },
       { key: "kind", label: "Tipo", type: "select", options: ["guia", "farm"] },
+      { key: "title", label: "Título", type: "text", placeholder: "Guia dos Atos para novatos" },
+      { key: "videoId", label: "Vídeo do YouTube", type: "youtube", placeholder: "Cole o link do YouTube ou o ID" },
       { key: "metric", label: "Etiqueta", type: "text", placeholder: "20 div/h ou Leveling" },
       { key: "note", label: "Descrição", type: "textarea" },
-      { key: "videoId", label: "ID do vídeo no YouTube", type: "text" },
-      { key: "videoTitle", label: "Título do vídeo", type: "text" },
-      { key: "image", label: "Foto do card (opcional)", type: "image" },
+      { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
+      { key: "image", label: "Foto customizada (opcional)", type: "image", advanced: true },
+      { key: "slug", label: "Link (slug)", type: "text", hint: "Gerado automaticamente pelo título.", advanced: true },
     ],
     create: () => ({
       game: "poe1",

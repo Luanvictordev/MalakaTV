@@ -2,20 +2,73 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp, ChevronDown, Copy, Plus, Search, Trash2, X } from "lucide-react";
 import { collections, siteFields, type Field, type CollectionKey } from "@/lib/adminSchema";
+import { slugify, youtubeThumb } from "@/lib/format";
 
 type Row = Record<string, unknown>;
 type Tab = CollectionKey | "site";
 
-const slugify = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+const ASCENDANCY_OPTIONS = [
+  "Assassin",
+  "Berserker",
+  "Champion",
+  "Chieftain",
+  "Deadeye",
+  "Elementalist",
+  "Gladiator",
+  "Guardian",
+  "Hierophant",
+  "Inquisitor",
+  "Juggernaut",
+  "Necromancer",
+  "Occultist",
+  "Pathfinder",
+  "Saboteur",
+  "Slayer",
+  "Trickster",
+  "Warden",
+  "Ascendant",
+  "Mercenary",
+];
+
+const QUICK_TAGS = [
+  "League Starter",
+  "Melee",
+  "Spell",
+  "Bow",
+  "Minion",
+  "Tank",
+  "Boss",
+  "Mapa",
+  "DOT",
+  "Ignite",
+  "Cold",
+  "Barata",
+  "Iniciante",
+  "3.30",
+];
 
 const inputClass = "field";
+
+function extractYoutubeId(raw: string): string {
+  const value = raw.trim();
+  if (!value) return "";
+  try {
+    const url = new URL(value);
+    if (url.hostname.includes("youtu.be")) {
+      return url.pathname.replace(/^\//, "").split("/")[0] || value;
+    }
+    const v = url.searchParams.get("v");
+    if (v) return v;
+    const parts = url.pathname.split("/").filter(Boolean);
+    const marker = parts.findIndex((part) => part === "shorts" || part === "embed" || part === "live");
+    if (marker >= 0 && parts[marker + 1]) return parts[marker + 1];
+  } catch {
+    // Já é um ID ou texto parcial
+  }
+  return value;
+}
 
 function Label({ children }: { children: React.ReactNode }) {
   return <span className="mb-1.5 block text-xs font-semibold text-body">{children}</span>;
@@ -89,6 +142,113 @@ function ImageField({ value, onChange }: { value: string; onChange: (value: stri
   );
 }
 
+function TagsField({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+
+  const toggleTag = (tag: string) => {
+    if (value.includes(tag)) {
+      onChange(value.filter((item) => item !== tag));
+    } else {
+      onChange([...value, tag]);
+    }
+  };
+
+  const addDraft = () => {
+    const clean = draft.trim();
+    if (!clean) return;
+    if (!value.includes(clean)) onChange([...value, clean]);
+    setDraft("");
+  };
+
+  const customTags = value.filter((tag) => !QUICK_TAGS.includes(tag));
+
+  return (
+    <div className="space-y-2.5">
+      <div className="flex flex-wrap gap-1.5">
+        {QUICK_TAGS.map((tag) => {
+          const active = value.includes(tag);
+          return (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggleTag(tag)}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                active ? "bg-ink text-primary" : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
+              }`}
+            >
+              {tag}
+            </button>
+          );
+        })}
+        {customTags.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => toggleTag(tag)}
+            className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-semibold text-primary"
+          >
+            {tag}
+            <X className="h-3 w-3" aria-hidden="true" />
+          </button>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              addDraft();
+            }
+          }}
+          placeholder="Outra tag (Enter pra adicionar)…"
+          className={inputClass}
+        />
+        <button type="button" onClick={addDraft} className="btn btn-secondary btn-sm shrink-0">
+          Adicionar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function YoutubeField({
+  value,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <input
+        value={value}
+        onChange={(event) => onChange(extractYoutubeId(event.target.value))}
+        placeholder={placeholder}
+        className={inputClass}
+      />
+      {value ? (
+        <div className="flex items-center gap-3 rounded-xl bg-canvas p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={youtubeThumb(value)}
+            alt=""
+            className="h-12 w-20 rounded-lg object-cover bg-canvas-soft"
+          />
+          <div className="min-w-0 text-xs">
+            <p className="font-semibold text-ink">Thumb carregada</p>
+            <p className="truncate text-mute">ID: {value}</p>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function FieldInput({
   field,
   value,
@@ -115,22 +275,44 @@ function FieldInput({
   }
 
   if (field.type === "tags") {
+    const tags = Array.isArray(value) ? value.map(String) : [];
     return (
       <div>
         <Label>{field.label}</Label>
-        <input
-          value={Array.isArray(value) ? value.join(", ") : String(value ?? "")}
-          onChange={(event) =>
-            onChange(
-              event.target.value
-                .split(",")
-                .map((tag) => tag.trim())
-                .filter(Boolean),
-            )
-          }
-          placeholder={field.placeholder}
+        <TagsField value={tags} onChange={onChange} />
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
+    );
+  }
+
+  if (field.type === "youtube") {
+    return (
+      <div>
+        <Label>{field.label}</Label>
+        <YoutubeField value={String(value ?? "")} placeholder={field.placeholder} onChange={onChange} />
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
+    );
+  }
+
+  if (field.type === "ascendancy") {
+    const current = String(value ?? "");
+    const list = current && !ASCENDANCY_OPTIONS.includes(current) ? [current, ...ASCENDANCY_OPTIONS] : ASCENDANCY_OPTIONS;
+    return (
+      <div>
+        <Label>{field.label}</Label>
+        <select
+          value={current}
+          onChange={(event) => onChange(event.target.value)}
           className={inputClass}
-        />
+        >
+          <option value="">Sem classe definida</option>
+          {list.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -227,14 +409,29 @@ export default function AdminEditor({
   const [tab, setTab] = useState<Tab>("builds");
   const [data, setData] = useState(initial);
   const [editing, setEditing] = useState<number | null>(null);
+  const [filter, setFilter] = useState("");
+  const [dirty, setDirty] = useState(false);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
   const collection = collections.find((item) => item.key === tab);
   const rows = collection ? (data[collection.key] as Row[]) : [];
 
+  const visibleIndices = useMemo(() => {
+    const term = filter.trim().toLowerCase();
+    return rows
+      .map((row, index) => ({ row, index }))
+      .filter(({ row }) => {
+        if (!term) return true;
+        return [row[collection?.titleKey ?? ""], row[collection?.subtitleKey ?? ""]]
+          .join(" ")
+          .toLowerCase()
+          .includes(term);
+      });
+  }, [rows, filter, collection]);
+
   const titleOf = useMemo(
-    () => (row: Row) => String(row[collection?.titleKey ?? ""] ?? "(sem título)"),
+    () => (row: Row) => String(row[collection?.titleKey ?? ""] ?? "") || "(sem título)",
     [collection],
   );
 
@@ -251,6 +448,7 @@ export default function AdminEditor({
       });
       const json = await response.json();
       if (!response.ok) throw new Error(json.error || "Falha ao salvar");
+      setDirty(false);
       setStatus(
         json.storage === "supabase"
           ? "Salvo no Supabase — já está no ar."
@@ -272,10 +470,12 @@ export default function AdminEditor({
     if (typeof patch.title === "string" && !list[index].slug) next.slug = slugify(patch.title);
     list[index] = next;
     setData({ ...data, [collection.key]: list });
+    setDirty(true);
   }
 
   function updateSite(key: string, value: unknown) {
     setData({ ...data, site: { ...data.site, [key]: value } });
+    setDirty(true);
   }
 
   function move(index: number, direction: -1 | 1) {
@@ -286,6 +486,23 @@ export default function AdminEditor({
     [list[index], list[target]] = [list[target], list[index]];
     setData({ ...data, [collection.key]: list });
     setEditing(target);
+    setDirty(true);
+  }
+
+  function duplicate(index: number) {
+    if (!collection) return;
+    const list = [...(data[collection.key] as Row[])];
+    const source = list[index];
+    const titleKey = collection.titleKey;
+    const copy: Row = {
+      ...source,
+      [titleKey]: `${String(source[titleKey] ?? "")} (cópia)`.trim(),
+      slug: source.slug ? `${String(source.slug)}-copia` : "",
+    };
+    list.splice(index + 1, 0, copy);
+    setData({ ...data, [collection.key]: list });
+    setEditing(index + 1);
+    setDirty(true);
   }
 
   function remove(index: number) {
@@ -294,6 +511,7 @@ export default function AdminEditor({
     const list = (data[collection.key] as Row[]).filter((_, position) => position !== index);
     setData({ ...data, [collection.key]: list });
     setEditing(null);
+    setDirty(true);
   }
 
   const tabClass = (active: boolean) =>
@@ -301,8 +519,11 @@ export default function AdminEditor({
       active ? "bg-ink text-canvas" : "bg-canvas-soft text-body hover:bg-primary-pale hover:text-ink"
     }`;
 
+  const primaryFields = collection ? collection.fields.filter((f) => !f.advanced) : [];
+  const advancedFields = collection ? collection.fields.filter((f) => f.advanced) : [];
+
   return (
-    <div>
+    <div className="pb-16">
       <div className="flex flex-wrap gap-2">
         {collections.map((item) => (
           <button
@@ -311,6 +532,7 @@ export default function AdminEditor({
             onClick={() => {
               setTab(item.key);
               setEditing(null);
+              setFilter("");
               setStatus("");
             }}
             className={tabClass(tab === item.key)}
@@ -323,6 +545,7 @@ export default function AdminEditor({
           onClick={() => {
             setTab("site");
             setEditing(null);
+            setFilter("");
             setStatus("");
           }}
           className={tabClass(tab === "site")}
@@ -335,6 +558,9 @@ export default function AdminEditor({
         <button type="button" onClick={save} disabled={busy} className="btn btn-primary btn-sm disabled:opacity-50">
           {busy ? "Salvando…" : "Salvar"}
         </button>
+        {dirty ? (
+          <span className="badge bg-[#ffd11a]/30 text-ink">Alterações não salvas</span>
+        ) : null}
         {status ? <span className="text-xs font-semibold text-positive-deep">{status}</span> : null}
       </div>
 
@@ -354,26 +580,46 @@ export default function AdminEditor({
           ))}
         </div>
       ) : (
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
           <div className="card-soft p-4">
-            <button
-              type="button"
-              onClick={() => {
-                if (!collection) return;
-                const list = [...(data[collection.key] as Row[]), collection.create()];
-                setData({ ...data, [collection.key]: list });
-                setEditing(list.length - 1);
-              }}
-              className="mb-3 w-full rounded-xl border border-ink/15 bg-canvas px-3 py-2 text-xs font-semibold text-ink transition-colors hover:bg-primary-pale"
-            >
-              + adicionar {collection?.label.toLowerCase()}
-            </button>
+            <div className="mb-3 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!collection) return;
+                  const list = [collection.create(), ...(data[collection.key] as Row[])];
+                  setData({ ...data, [collection.key]: list });
+                  setEditing(0);
+                  setFilter("");
+                  setDirty(true);
+                }}
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-ink/15 bg-canvas px-3 py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-primary-pale"
+              >
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                Adicionar {collection?.label.toLowerCase()}
+              </button>
+
+              {rows.length > 5 ? (
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-mute"
+                    aria-hidden="true"
+                  />
+                  <input
+                    value={filter}
+                    onChange={(event) => setFilter(event.target.value)}
+                    placeholder="Buscar na lista…"
+                    className="w-full rounded-xl border border-ink/15 bg-canvas py-2 pl-8 pr-3 text-xs text-ink outline-none focus:border-ink"
+                  />
+                </div>
+              ) : null}
+            </div>
 
             <ul className="space-y-1.5">
-              {rows.map((row, index) => (
+              {visibleIndices.map(({ row, index }) => (
                 <li
                   key={`${String(row.slug ?? row.name ?? index)}-${index}`}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-colors ${
+                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 transition-colors ${
                     editing === index
                       ? "border-ink/40 bg-primary-pale"
                       : "border-transparent bg-canvas hover:border-ink/20"
@@ -391,27 +637,39 @@ export default function AdminEditor({
                   </button>
                   <button
                     type="button"
-                    onClick={() => move(index, -1)}
-                    className="text-xs text-mute hover:text-ink"
-                    aria-label="subir"
+                    onClick={() => duplicate(index)}
+                    className="p-1 text-mute hover:text-ink"
+                    aria-label="duplicar"
+                    title="Duplicar"
                   >
-                    ↑
+                    <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(index, -1)}
+                    className="p-1 text-mute hover:text-ink"
+                    aria-label="subir"
+                    title="Subir"
+                  >
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => move(index, 1)}
-                    className="text-xs text-mute hover:text-ink"
+                    className="p-1 text-mute hover:text-ink"
                     aria-label="descer"
+                    title="Descer"
                   >
-                    ↓
+                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="text-xs text-mute hover:text-[#a72027]"
+                    className="p-1 text-mute hover:text-[#a72027]"
                     aria-label="apagar"
+                    title="Apagar"
                   >
-                    ✕
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                 </li>
               ))}
@@ -421,7 +679,7 @@ export default function AdminEditor({
           <div className="card-soft p-5">
             {collection && editing !== null && rows[editing] ? (
               <div className="grid gap-4">
-                {collection.fields.map((field) => (
+                {primaryFields.map((field) => (
                   <FieldInput
                     key={`${editing}-${field.key}`}
                     field={field}
@@ -429,16 +687,48 @@ export default function AdminEditor({
                     onChange={(value) => updateRow(editing, { [field.key]: value })}
                   />
                 ))}
+
+                {advancedFields.length > 0 ? (
+                  <details className="rounded-2xl border border-ink/10 bg-canvas/60 p-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-body">
+                      <span>Mais opções (opcional)</span>
+                      <ChevronDown className="h-4 w-4 text-mute" aria-hidden="true" />
+                    </summary>
+                    <div className="mt-4 grid gap-4">
+                      {advancedFields.map((field) => (
+                        <FieldInput
+                          key={`${editing}-${field.key}`}
+                          field={field}
+                          value={rows[editing][field.key]}
+                          onChange={(value) => updateRow(editing, { [field.key]: value })}
+                        />
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
               </div>
             ) : (
               <p className="text-sm text-body">
-                Escolha um item na lista (ou adicione um novo) pra editar. Não esqueça de clicar em
-                Salvar no topo.
+                Escolha um item na lista (ou adicione um novo) pra editar.
               </p>
             )}
           </div>
         </div>
       )}
+
+      {dirty ? (
+        <div className="fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-ink px-5 py-2.5 text-canvas shadow-xl">
+          <span className="text-xs font-medium text-canvas/85">Alterações não salvas</span>
+          <button
+            type="button"
+            onClick={save}
+            disabled={busy}
+            className="btn btn-primary btn-sm disabled:opacity-50"
+          >
+            {busy ? "Salvando…" : "Salvar agora"}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
