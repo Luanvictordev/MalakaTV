@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "poe1",
+    "name": "Path of Exile 1",
+    "shortName": "PoE 1",
+    "status": "ativo",
+    "releaseLabel": "Liga 3.30 · Covens of Umbra",
+    "releaseDate": "13 de novembro",
+    "description": "Builds league starter, farms, atos, atlas e as ferramentas do jogo. Tudo que o Malaka usa na liga.",
+    "cover": ""
+  },
+  {
+    "slug": "poe2",
+    "name": "Path of Exile 2",
+    "shortName": "PoE 2",
+    "status": "em-breve",
+    "releaseLabel": "Free-to-play em 11 de dezembro",
+    "releaseDate": "dezembro",
+    "description": "Os guias de PoE 2 entram no ar junto com o lançamento. Até lá, essa seção fica fechada.",
+    "cover": ""
+  },
+  {
+    "slug": "hero-siege",
+    "name": "Hero Siege",
+    "shortName": "Hero Siege",
+    "status": "em-breve",
+    "releaseLabel": "Ainda sem data definida",
+    "releaseDate": "",
+    "description": "O próximo ARPG da fila: builds, farms e progressão explicados do mesmo jeito.",
+    "cover": ""
+  }
+]

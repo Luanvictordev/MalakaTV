@@ -1,0 +1,599 @@
+[
+  {
+    "game": "poe1",
+    "slug": "ethereal-knives-elementalist",
+    "name": "Ethereal Knives Elementalist",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Spell",
+      "S+ tier"
+    ],
+    "note": "O canal tem o guia e os PoBs do começo ao fim! S+ tier que ficou ainda melhor na 3.29.",
+    "videoId": "FMtdXWFo0o8",
+    "videoTitle": "Ethereal Knives Elementalist | S+ Tier League starter just got better! | POE 1 3.29",
+    "image": "",
+    "featured": true,
+    "tier": "S+"
+  },
+  {
+    "game": "poe1",
+    "slug": "penance-brand-ignite-elementalist",
+    "name": "Penance Brand Ignite",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Ignite",
+      "Brand"
+    ],
+    "note": "Correntes de explosão absurdas — versão atualizada do guia do Goratha.",
+    "videoId": "IE27er3gaUw",
+    "videoTitle": "Goratha's Penance Brand Ignite Elementalist 3.28 Mirage - UPDATED Insane Explosion Chains",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "glacial-cascade-miner",
+    "name": "Glacial Cascade of the Fissure Miner",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Miner",
+      "Nerfada"
+    ],
+    "note": "Build que eu joguei na 3.28 — forte, mas foi nerfada.",
+    "videoId": "XbPkEupMSbo",
+    "videoTitle": "[PoE 3.29] Glacial Cascade of the Fissure Miner Elementalist Changes",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "explosive-arrow-ballista",
+    "name": "Explosive Arrow Ballista",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Ballista",
+      "DOT"
+    ],
+    "note": "Buffada: quiver + node de ballista. Gameplay em low, normal e high budget.",
+    "videoId": "w6ujqr1GBbY",
+    "videoTitle": "[PoE 1] POEGUY's BACKUP 3.29 STARTER BUILD // GAMEPLAY SHOWCASE ( on Low, Normal & High budget )",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "arctic-salvo-elementalist",
+    "name": "Arctic Salvo Elementalist",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Cold"
+    ],
+    "note": "Explosões de gelo prazerosas — Creeping Frost e Winter Orb.",
+    "videoId": "kO1ZTP_WLvE",
+    "videoTitle": "[3.29] ARCTIC SALVO Build Guide — Creeping Frost & Winter Orb Elementalist [Path of Exile 1]",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "wintertide-brand",
+    "name": "Wintertide Brand Cold DOT",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Cold DOT",
+      "Brand"
+    ],
+    "note": "Cold DOT vai ser buffado, mas ainda não sabemos como.",
+    "videoId": "TJHcfOATmeM",
+    "videoTitle": "[PoE 3.29] Wintertide Brand Cold Dot Elementalist League Starter Guide | Curse of the Allflame",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "cyclone-shockwave-slayer",
+    "name": "Cyclone Shockwave Slayer",
+    "className": "Slayer",
+    "tags": [
+      "League Starter",
+      "Melee"
+    ],
+    "note": "Spin to win.",
+    "videoId": "H9-aXrx93w4",
+    "videoTitle": "[Path of Exile 3.30] ⚔️ Cyclone Shockwave Slayer ⚔️ Updated League Starter Build",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "poisonous-concoction-of-bouncing",
+    "name": "Poisonous Concoction of Bouncing",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Poison"
+    ],
+    "note": "Pra você que tem saudade da skill no PoE2.",
+    "videoId": "-63PxSlXIFM",
+    "videoTitle": "Poisonous Concoction of Bouncing — Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "absolution-guardian",
+    "name": "Absolution Guardian",
+    "className": "Guardian",
+    "tags": [
+      "League Starter",
+      "Minion"
+    ],
+    "note": "Seus minions copiam suas skills — guia de leveling bem detalhado.",
+    "videoId": "Z4tVWAIqOkE",
+    "videoTitle": "[PoE 3.28] My Starter! Absolution Guardian Build - IN DEPTH League Starter Leveling - Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "boneshatter-juggernaut",
+    "name": "Boneshatter of Complex Trauma Juggernaut",
+    "className": "Juggernaut",
+    "tags": [
+      "League Starter",
+      "Melee",
+      "Tank"
+    ],
+    "note": "Big explosions e insanamente tanque.",
+    "videoId": "D79KG-lJoWU",
+    "videoTitle": "This Starter Melee Build is INSANELY TANKY! - Boneshatter of Complex Trauma Juggernaut [PoE 3.28]",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "shock-nova",
+    "name": "Shock Nova",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Lightning"
+    ],
+    "note": "Build elétrica.",
+    "videoId": "UzdZpUlR7Ss",
+    "videoTitle": "Shock Nova — Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "bleed-lacerate-gladiator",
+    "name": "Bleed Lacerate + Retaliate",
+    "className": "Gladiator",
+    "tags": [
+      "League Starter",
+      "DOT",
+      "Tank",
+      "Boss"
+    ],
+    "note": "DOT com explosão e bem tanque — e os DOTs vão ser buffados.",
+    "videoId": "Xr1UEns9ukk",
+    "videoTitle": "[PoE 3.27] Bleed LACERATE + RETALIATE Gladiator - League Starter to Ubers Build Guide, Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "toxic-rain-pathfinder",
+    "name": "Toxic Rain Pathfinder",
+    "className": "Pathfinder",
+    "tags": [
+      "League Starter",
+      "DOT",
+      "Chaos"
+    ],
+    "note": "Buff nas passivas de flask da Pathfinder.",
+    "videoId": "UHm_-qgAtyg",
+    "videoTitle": "Toxic Rain Pathfinder League Start Guide - PoE 1 3.28 - Mirage League",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "righteous-fire-chieftain",
+    "name": "Righteous Fire Chieftain",
+    "className": "Chieftain",
+    "tags": [
+      "League Starter",
+      "Tank",
+      "Iniciante"
+    ],
+    "note": "Walk simulator — ou você ama ou você odeia. A melhor build para iniciantes.",
+    "videoId": "gO3BoaiFlQU",
+    "videoTitle": "[3.30] A melhor build para iniciantes - Righteous Fire Chieftain",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "smite-slayer",
+    "name": "Smite Slayer",
+    "className": "Slayer",
+    "tags": [
+      "League Starter",
+      "Melee",
+      "Boss",
+      "Tank"
+    ],
+    "note": "Roleplay de paladino: tankudo e mata boss.",
+    "videoId": "IyCnFvrqvSg",
+    "videoTitle": "[PoE 3.27] Tanky SMITE Slayer - IN DEPTH League Starter Build Guide for Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "lightning-arrow-deadeye",
+    "name": "Lightning Arrow / Elemental Hit",
+    "className": "Deadeye",
+    "tags": [
+      "League Starter",
+      "Bow"
+    ],
+    "note": "Boa, mas se prepare pra morrer muito no começo.",
+    "videoId": "izWIPL8Slvw",
+    "videoTitle": "Lightning Arrow / Elemental Hit Deadeye Full Guide | My League Starter for Mirage 3.28 - PoE 1",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "molten-strike-juggernaut",
+    "name": "Molten Strike of the Zenith Juggernaut",
+    "className": "Juggernaut",
+    "tags": [
+      "Melee",
+      "Boss",
+      "Endgame"
+    ],
+    "note": "O predador do topo do endgame.",
+    "videoId": "wpgCAtlLF2A",
+    "videoTitle": "3.27 Molten Strike of the Zenith Juggernaut - The apex predator of end game builds",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "kitavas-thirst-corpseblaster",
+    "name": "Kitava's Thirst Corpseblaster",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Off-meta"
+    ],
+    "note": "Build diferenciada e bem off-meta — parece boa mesmo nas versões baratinhas.",
+    "videoId": "B5Zu7CStDO8",
+    "videoTitle": "3.29 Kitava's Thirst Corpseblaster League Start Build Guide - Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "spark-archmage-hierophant",
+    "name": "Spark Archmage Hierophant",
+    "className": "Hierophant",
+    "tags": [
+      "League Starter",
+      "Spell"
+    ],
+    "note": "Boa, mas só funciona em mapas de corredor.",
+    "videoId": "DpHXNVNeH88",
+    "videoTitle": "Spark Archmage Hierophant is BACK! | 3.29 League Starter Guide | Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "soulwrest-necromancer",
+    "name": "Soulwrest Necromancer",
+    "className": "Necromancer",
+    "tags": [
+      "League Starter",
+      "Minion"
+    ],
+    "note": "Build de minion.",
+    "videoId": "_UE-ouTqPII",
+    "videoTitle": "[PoE 3.29] Better than ever before! | Soulwrest Necromancer League Starter",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "poison-srs-necromancer",
+    "name": "Poison SRS Necromancer",
+    "className": "Necromancer",
+    "tags": [
+      "League Starter",
+      "Minion",
+      "Poison"
+    ],
+    "note": "Build de minion foguinhuuu.",
+    "videoId": "4KX5z5d2VbI",
+    "videoTitle": "[3.28] Poison SRS Guide Here For The 50th Time, Idk I Lost Count In PoE Mirage",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "ice-crash-ignite-chieftain",
+    "name": "Ice Crash Ignite Chieftain",
+    "className": "Chieftain",
+    "tags": [
+      "League Starter",
+      "Ignite",
+      "Melee"
+    ],
+    "note": "Precisa de um cinto único — aparentemente fácil de farmar.",
+    "videoId": "YTTcKnqipOM",
+    "videoTitle": "PoE 3.29 - Ice Crash Ignite Chieftain - Build Guide",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "shield-crush",
+    "name": "Shield Crush",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Melee",
+      "Barata"
+    ],
+    "note": "BBB: bom, bonito e barato.",
+    "videoId": "LAAATs8mWb4",
+    "videoTitle": "CRUSH the New League with this Build | Curse of the Allflame | Path of Exile 3.29",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "venom-gyre",
+    "name": "Venom Gyre",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Barata"
+    ],
+    "note": "Build baratinha e com clareza visual.",
+    "videoId": "pdFpksjrre4",
+    "videoTitle": "Venom Gyre is Still Good! | My plans for 3.29 Curse of the Allflame | Path of Exile 1",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "power-siphon-assassin",
+    "name": "Power Siphon Assassin",
+    "className": "Assassin",
+    "tags": [
+      "League Starter",
+      "Wand",
+      "Endgame"
+    ],
+    "note": "Afana — ganhou uma Garukhan embutida. Mega buff no endgame?",
+    "videoId": "C9x3eZeYZXw",
+    "videoTitle": "Guia League Starter Power Siphon - Assassin",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "animate-weapon-chieftain",
+    "name": "Animate Weapon Chieftain",
+    "className": "Chieftain",
+    "tags": [
+      "League Starter",
+      "Minion"
+    ],
+    "note": "Guia do GhazzyTV — build de minions armados.",
+    "videoId": "amUCdMcjW2M",
+    "videoTitle": "Animate Weapon CHIEFTAIN?? - Summoner Build Guide",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "kinetic-blast-of-clustering-necro",
+    "name": "Kinetic Blast of Clustering Necromancer",
+    "className": "Necromancer",
+    "tags": [
+      "League Starter",
+      "Wand"
+    ],
+    "note": "Build vai fazer seu PC chorar.",
+    "videoId": "QOXeHiSK-9U",
+    "videoTitle": "Kinetic Blast of Clustering Necromancer League Start Guide 3.29",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "kinetic-fusillade-ballista",
+    "name": "Kinetic Fusillade Ballista",
+    "className": "",
+    "tags": [
+      "League Starter",
+      "Ballista"
+    ],
+    "note": "Build do Palsteron — confiável.",
+    "videoId": "_oBZ-N5Fg9Y",
+    "videoTitle": "How I Will Level My Kinetic Fusillade Ballista in Patch 3.29 | Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "coldslinger-cold-dot",
+    "name": "Coldslinger Cold DOT",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Cold DOT"
+    ],
+    "note": "Jungroan — pode ficar cara.",
+    "videoId": "a0qmdTU8PLI",
+    "videoTitle": "Spellslinger x Cold DoT Elementalist League Start Build Guide [Path of Exile 3.29]",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "vaal-ice-nova-elementalist",
+    "name": "Vaal Ice Nova Elementalist",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Mapa"
+    ],
+    "note": "Build de mapa — não mata boss.",
+    "videoId": "mKrqlBj-SbA",
+    "videoTitle": "My League Starter for 3.29: Vaal Ice Nova Elementalist [PoE]",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "static-strike-guardian",
+    "name": "Static Strike Guardian",
+    "className": "Guardian",
+    "tags": [
+      "League Starter",
+      "Melee",
+      "3.30"
+    ],
+    "note": "A league starter mais forte que eu já joguei.",
+    "videoId": "MI3e0Gz6R6s",
+    "videoTitle": "The Strongest Leaguestarter I Ever Played | Static Strike Guardian | 3.30 Path of Exile 1",
+    "image": "",
+    "featured": true,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "frost-blades-trickster",
+    "name": "Frost Blades Trickster",
+    "className": "Trickster",
+    "tags": [
+      "League Starter",
+      "Melee",
+      "Buffada"
+    ],
+    "note": "Buffada — mais tanque e mais rápida. Minha starter.",
+    "videoId": "NmuRGQkc9E0",
+    "videoTitle": "3.23 Frost Blades Trickster League Start Guide",
+    "image": "",
+    "featured": true,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "luminary-mercenary",
+    "name": "Luminary Mercenary",
+    "className": "Mercenary",
+    "tags": [
+      "League Starter",
+      "Nerfada"
+    ],
+    "note": "Foi nerfada, mas ainda está forte.",
+    "videoId": "J8ROr84cKhk",
+    "videoTitle": "My leaguestart plan for Luminary merc poe1 3.30",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "blade-fall-blade-blast-assassin",
+    "name": "Blade Fall / Blade Blast Slinger",
+    "className": "Assassin",
+    "tags": [
+      "League Starter",
+      "Spell"
+    ],
+    "note": "Muito forte.",
+    "videoId": "d3fCmCBM0F0",
+    "videoTitle": "Blade Fall Blade Blast Slinger Assassin Leaguestart Build Guide 3.29 - Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "ice-shot-warden",
+    "name": "Ice Shot of Penetration Warden",
+    "className": "Warden",
+    "tags": [
+      "League Starter",
+      "Bow",
+      "Boss"
+    ],
+    "note": "Mapa + boss — guia completo.",
+    "videoId": "Q6R7gQ7eywE",
+    "videoTitle": "[PoE 3.29] Ice Shot of Penetration Tincture Warden - FULL GUIDE (yeah I'm running it back)",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "lightning-tendrils-elementalist",
+    "name": "Lightning Tendrils Elementalist",
+    "className": "Elementalist",
+    "tags": [
+      "League Starter",
+      "Spell",
+      "Lightning"
+    ],
+    "note": "Build de canalização elétrica.",
+    "videoId": "sOKiVtyhb8M",
+    "videoTitle": "Lightning Tendrils Elementalist — Path of Exile",
+    "image": "",
+    "featured": false,
+    "tier": ""
+  }
+]

@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-manrope), Inter, system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #e8ebe6;
+
+  --color-ink: #0e0f0c;
+  --color-ink-deep: #163300;
+  --color-body: #454745;
+  --color-mute: #868685;
+
+  --color-primary: #9fe870;
+  --color-primary-active: #cdffad;
+  --color-primary-pale: #e2f6d5;
+  --color-positive-deep: #054d28;
+
+  --color-warning: #ffd11a;
+  --color-accent-orange: #ffc091;
+  --color-accent-cyan: #38c8ff;
+
+  --radius-card: 24px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas-soft);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex h-12 items-center justify-center gap-2 rounded-3xl px-6 text-[15px] font-semibold transition-colors;
+  }
+  .btn-sm {
+    @apply h-9 px-4 text-sm;
+  }
+  .btn-primary {
+    @apply bg-primary text-ink hover:bg-primary-active;
+  }
+  .btn-secondary {
+    @apply bg-canvas text-ink hover:bg-primary-pale;
+  }
+  .btn-tertiary {
+    @apply border border-ink/25 bg-transparent text-ink hover:border-ink;
+  }
+  .btn-dark {
+    @apply bg-ink text-primary hover:bg-ink-deep;
+  }
+
+  .card {
+    @apply rounded-3xl bg-canvas;
+  }
+  .card-soft {
+    @apply rounded-3xl bg-canvas-soft;
+  }
+  .card-inset {
+    @apply rounded-2xl bg-canvas-soft;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold;
+  }
+  .badge-neutral {
+    @apply bg-canvas-soft text-body;
+  }
+  .badge-lime {
+    @apply bg-primary-pale text-positive-deep;
+  }
+  .badge-lime-solid {
+    @apply bg-primary text-ink;
+  }
+  .badge-ink {
+    @apply bg-ink text-canvas-soft;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-ink/25 bg-canvas px-4 py-3 text-[15px] text-ink outline-none transition-colors placeholder:text-mute focus:border-ink;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-mute;
+  }
+
+  .rule {
+    @apply h-px w-full bg-ink/10;
+  }
+
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 text-sm font-semibold text-ink underline-offset-4 hover:underline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

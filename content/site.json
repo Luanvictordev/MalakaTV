@@ -1,0 +1,33 @@
+{
+  "name": "MalakaTV",
+  "tagline": "Builds, guias e farms",
+  "handle": "@MalakaTV",
+  "bio": "Canal de ARPG sem enrolação: build que funciona, farm que paga e explicação de quem joga todo dia. Esse site é o caderno do canal — o que passa no vídeo fica catalogado aqui.",
+  "youtube": "https://www.youtube.com/@MalakaTV",
+  "description": "Guias de ARPG do canal MalakaTV: Path of Exile 1, Path of Exile 2 e Hero Siege — builds, farms, atlas e ferramentas.",
+  "heroTitle": "Os guias do Malaka, organizados.",
+  "heroText": "Build league starter, farm que paga, atos, atlas e as ferramentas que ele usa — tudo com vídeo, resumo e link direto. Sem caçar mensagem no Discord.",
+  "leaguePatch": "3.30",
+  "leagueName": "Covens of Umbra",
+  "leagueDate": "13 de novembro",
+  "leagueUrl": "https://www.pathofexile.com/covens",
+  "leagueImage": "/images/liga-3-30.jpg",
+  "spotlights": [
+    {
+      "label": "Patch notes 3.30",
+      "description": "Tudo que mudou na Covens of Umbra, direto do fórum oficial.",
+      "url": "https://www.pathofexile.com/forum/view-thread/4013680"
+    },
+    {
+      "label": "Árvore de passivas nova",
+      "description": "A tree da 3.30 pra planejar os pontos antes da liga começar.",
+      "url": "https://poedb.tw/us/passive-skill-tree/"
+    },
+    {
+      "label": "Atlas novo",
+      "description": "A árvore do atlas atualizada pra montar sua estratégia.",
+      "url": "https://poedb.tw/us/atlas-skill-tree/"
+    }
+  ],
+  "discord": "https://discord.gg/Hvse3EdwQx"
+}

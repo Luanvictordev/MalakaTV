@@ -1,0 +1,68 @@
+[
+  {
+    "game": "poe1",
+    "slug": "guia-dos-atos",
+    "kind": "guia",
+    "title": "Guia dos Atos para novatos",
+    "metric": "Leveling",
+    "note": "Domine os Atos sendo um novato no PoE 1 — o passo a passo de como passar cada ato sem sofrimento.",
+    "videoId": "HpsqsHDm5p0",
+    "videoTitle": "Domine os Atos sendo um novato no poe1! Mirage 3.28!",
+    "image": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "guia-voidstones",
+    "kind": "guia",
+    "title": "4 Voidstones (pontos de atlas)",
+    "metric": "Atlas",
+    "note": "Como completar o Atlas e conseguir suas 4 Voidstones da maneira mais fácil e rápida — é assim que você farma os pontos de atlas.",
+    "videoId": "BzWG54OVdZM",
+    "videoTitle": "Como completar o ATLAS e Conseguir suas 4 VOIDSTONES da maneira mais fácil e rápida! 3.28 MIRAGE",
+    "image": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "farm-bestas-essencia",
+    "kind": "farm",
+    "title": "Essência + Besta",
+    "metric": "~5 div/h",
+    "note": "Farm ez de Essência + Besta sem investimento — foi assim que eu farmei 100 divines.",
+    "videoId": "SYjLJY_UIY0",
+    "videoTitle": "Como eu farmei 100 divines! Farm ez de Essencia + Besta - 5 div hora sem investimento!",
+    "image": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "farm-essencia",
+    "kind": "farm",
+    "title": "Essência (farm secreto)",
+    "metric": "20 div/h",
+    "note": "Farm secreto de 20 div/hora — aproveite enquanto funciona.",
+    "videoId": "Q8vxpQrRkEo",
+    "videoTitle": "FARM SECRETO DE 20 DIV/HORA - APROVEITE ENQUANTO FUNCIONA!",
+    "image": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "farm-harvest",
+    "kind": "farm",
+    "title": "Nightmare Harvest",
+    "metric": "15–18 div/h",
+    "note": "Nightmare Harvest pagando 15–18 div/hora — esse aqui paga cada vez mais.",
+    "videoId": "T6t_ieg0uqM",
+    "videoTitle": "Nightmare Harvest - 15-18 DIV/HORA! Esse aqui paga cada vez MAIS!",
+    "image": ""
+  },
+  {
+    "game": "poe1",
+    "slug": "farm-stacked-deck",
+    "kind": "farm",
+    "title": "Stacked Deck",
+    "metric": "+1 div/mapa",
+    "note": "Guia de farm de Stacked Deck atualizado — mais de 1 div por mapa.",
+    "videoId": "q9Dvy7ean3Y",
+    "videoTitle": "Updated Stacked Deck Farming Guide + 1 Division per Map - Path of Exile 3.28 Mirage",
+    "image": ""
+  }
+]
