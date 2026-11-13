@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Swords } from "lucide-react";
 import DiscordIcon from "@/components/icons/DiscordIcon";
+import FacebookIcon from "@/components/icons/FacebookIcon";
+import InstagramIcon from "@/components/icons/InstagramIcon";
+import KickIcon from "@/components/icons/KickIcon";
+import TwitchIcon from "@/components/icons/TwitchIcon";
 import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import LeagueCover from "@/components/LeagueCover";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/Motion";
@@ -223,13 +227,40 @@ export default async function HomePage() {
                   Entrar no Discord
                 </a>
               </div>
-              <div className="mt-6 flex flex-wrap gap-1.5">
-                {games.map((game) => (
-                  <span key={game.slug} className="badge badge-neutral bg-canvas-soft">
-                    {game.shortName}
-                  </span>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {[
+                  {
+                    label: "Twitch",
+                    href: site.twitch || "https://www.twitch.tv/malakatv",
+                    icon: <TwitchIcon className="h-3.5 w-3.5 shrink-0 text-[#9146FF]" />,
+                  },
+                  {
+                    label: "Instagram",
+                    href: site.instagram || "https://www.instagram.com/caio.malaka/",
+                    icon: <InstagramIcon className="h-3.5 w-3.5 shrink-0 text-[#E1306C]" />,
+                  },
+                  {
+                    label: "Facebook",
+                    href: site.facebook || "https://www.facebook.com/caio.malaka.tv/",
+                    icon: <FacebookIcon className="h-3.5 w-3.5 shrink-0 text-[#1877F2]" />,
+                  },
+                  {
+                    label: "Kick",
+                    href: site.kick || "https://kick.com/malaka_tv",
+                    icon: <KickIcon className="h-3.5 w-3.5 shrink-0 text-[#009916]" />,
+                  },
+                ].map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="badge badge-neutral bg-canvas-soft px-3.5 py-1.5 text-xs text-ink transition-colors hover:bg-primary-pale"
+                  >
+                    {social.icon}
+                    {social.label}
+                  </a>
                 ))}
-                <span className="badge badge-neutral bg-canvas-soft">pt-BR</span>
               </div>
             </div>
 

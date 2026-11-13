@@ -81,7 +81,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     publisher: {
       "@type": "Person",
       name: site.name,
-      sameAs: [site.youtube, site.discord].filter(Boolean),
+      sameAs: [
+        site.youtube,
+        site.discord,
+        site.twitch,
+        site.instagram,
+        site.facebook,
+        site.kick,
+      ].filter(Boolean),
     },
   };
 

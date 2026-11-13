@@ -60,6 +60,10 @@ export type SiteConfig = {
   bio: string;
   youtube: string;
   discord: string;
+  twitch?: string;
+  instagram?: string;
+  facebook?: string;
+  kick?: string;
   description: string;
   heroTitle: string;
   heroText: string;
