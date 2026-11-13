@@ -16,9 +16,21 @@ export default function VideoThumb({
   const [step, setStep] = useState(0);
   const sources = [
     image,
-    `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
-    `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : "",
+    videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : "",
   ].filter(Boolean) as string[];
+
+  if (sources.length === 0) {
+    return (
+      <div
+        role="img"
+        aria-label={alt}
+        className={`flex items-center justify-center bg-canvas-soft font-display text-xs font-bold uppercase tracking-widest text-mute ${className}`}
+      >
+        Sem mídia
+      </div>
+    );
+  }
 
   const src = sources[Math.min(step, sources.length - 1)];
 

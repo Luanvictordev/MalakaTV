@@ -92,16 +92,27 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     },
   };
 
+  const themeScript = `(function(){try{if(localStorage.getItem('malaka-theme')==='dark'){var d=document.documentElement;d.classList.add('dark');d.style.colorScheme='dark';}}catch(e){}})();`;
+
   return (
-    <html lang="pt-BR" className={`${display.variable} ${body.variable}`}>
+    <html lang="pt-BR" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <MotionProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-on-primary focus:shadow-lg"
+          >
+            Pular para o conteúdo
+          </a>
           <SiteHeader />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <SiteFooter />
           <BackToTop />
         </MotionProvider>

@@ -1,19 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import { slugify } from "@/lib/format";
 import { createClient, getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
-
-function slugify(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 export async function POST(request: Request) {
   if (supabaseConfigured()) {

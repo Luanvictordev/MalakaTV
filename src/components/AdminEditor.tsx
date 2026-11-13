@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 import { collections, siteFields, type Field, type CollectionKey } from "@/lib/adminSchema";
-import { slugify, youtubeThumb } from "@/lib/format";
+import { extractYoutubeId, slugify, youtubeThumb } from "@/lib/format";
 
 type Row = Record<string, unknown>;
 type Tab = CollectionKey | "site";
@@ -51,25 +51,6 @@ const QUICK_TAGS = [
 ];
 
 const inputClass = "field";
-
-function extractYoutubeId(raw: string): string {
-  const value = raw.trim();
-  if (!value) return "";
-  try {
-    const url = new URL(value);
-    if (url.hostname.includes("youtu.be")) {
-      return url.pathname.replace(/^\//, "").split("/")[0] || value;
-    }
-    const v = url.searchParams.get("v");
-    if (v) return v;
-    const parts = url.pathname.split("/").filter(Boolean);
-    const marker = parts.findIndex((part) => part === "shorts" || part === "embed" || part === "live");
-    if (marker >= 0 && parts[marker + 1]) return parts[marker + 1];
-  } catch {
-    // Já é um ID ou texto parcial
-  }
-  return value;
-}
 
 function Label({ children }: { children: React.ReactNode }) {
   return <span className="mb-1.5 block text-xs font-semibold text-body">{children}</span>;
@@ -137,8 +118,128 @@ function ImageField({ value, onChange }: { value: string; onChange: (value: stri
             </button>
           ) : null}
         </div>
-        {error ? <p className="text-xs text-[#a72027]">{error}</p> : null}
+        {error ? <p className="text-xs text-danger">{error}</p> : null}
       </div>
+    </div>
+  );
+}
+
+function ImagesField({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [urlDraft, setUrlDraft] = useState("");
+
+  const addUrl = () => {
+    const clean = urlDraft.trim();
+    if (!clean) return;
+    onChange([...value, clean]);
+    setUrlDraft("");
+  };
+
+  return (
+    <div className="space-y-3">
+      {value.length > 0 ? (
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          {value.map((src, index) => (
+            <div key={`${src}-${index}`} className="group relative overflow-hidden rounded-xl border border-ink/15 bg-canvas">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" className="aspect-video w-full object-cover" />
+              <div className="flex items-center justify-between gap-1 border-t border-ink/10 px-2 py-1">
+                <span className="text-[11px] font-medium text-mute">Print {index + 1}</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => {
+                      const next = [...value];
+                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                      onChange(next);
+                    }}
+                    className="p-0.5 text-mute hover:text-ink disabled:opacity-25"
+                    aria-label="Mover print para trás"
+                  >
+                    <ArrowUp className="h-3 w-3 -rotate-90" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === value.length - 1}
+                    onClick={() => {
+                      const next = [...value];
+                      [next[index + 1], next[index]] = [next[index], next[index + 1]];
+                      onChange(next);
+                    }}
+                    className="p-0.5 text-mute hover:text-ink disabled:opacity-25"
+                    aria-label="Mover print para frente"
+                  >
+                    <ArrowDown className="h-3 w-3 -rotate-90" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChange(value.filter((_, itemIndex) => itemIndex !== index))}
+                    className="p-0.5 text-mute hover:text-danger"
+                    aria-label="Remover print"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="btn btn-secondary btn-sm cursor-pointer">
+          {busy ? "enviando…" : "Enviar prints"}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={async (event) => {
+              const files = Array.from(event.target.files ?? []);
+              if (!files.length) return;
+              setBusy(true);
+              setError("");
+              try {
+                const uploaded: string[] = [];
+                for (const file of files) {
+                  const form = new FormData();
+                  form.append("file", file);
+                  const response = await fetch("/api/admin/upload", { method: "POST", body: form });
+                  const json = await response.json();
+                  if (!response.ok) throw new Error(json.error || "Falha no upload");
+                  uploaded.push(json.url);
+                }
+                onChange([...value, ...uploaded]);
+              } catch (uploadError) {
+                setError(uploadError instanceof Error ? uploadError.message : "Falha no upload");
+              } finally {
+                setBusy(false);
+                event.target.value = "";
+              }
+            }}
+          />
+        </label>
+        <div className="flex min-w-[200px] flex-1 gap-2">
+          <input
+            value={urlDraft}
+            onChange={(event) => setUrlDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                addUrl();
+              }
+            }}
+            placeholder="Ou cole o link da imagem e aperte Enter"
+            className={inputClass}
+          />
+          <button type="button" onClick={addUrl} className="btn btn-secondary btn-sm">
+            Adicionar
+          </button>
+        </div>
+      </div>
+      {error ? <p className="text-xs text-danger">{error}</p> : null}
     </div>
   );
 }
@@ -174,7 +275,7 @@ function TagsField({ value, onChange }: { value: string[]; onChange: (value: str
               type="button"
               onClick={() => toggleTag(tag)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                active ? "bg-ink text-primary" : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
+                active ? "bg-chrome text-primary" : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
               }`}
             >
               {tag}
@@ -186,7 +287,7 @@ function TagsField({ value, onChange }: { value: string[]; onChange: (value: str
             key={tag}
             type="button"
             onClick={() => toggleTag(tag)}
-            className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-semibold text-primary"
+            className="inline-flex items-center gap-1 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary"
           >
             {tag}
             <X className="h-3 w-3" aria-hidden="true" />
@@ -228,7 +329,7 @@ function YoutubeField({
     <div className="space-y-2">
       <input
         value={value}
-        onChange={(event) => onChange(extractYoutubeId(event.target.value))}
+        onChange={(event) => onChange(extractYoutubeId(event.target.value) || event.target.value.trim())}
         placeholder={placeholder}
         className={inputClass}
       />
@@ -247,6 +348,50 @@ function YoutubeField({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function formatSpotlights(rows: { label?: string; url?: string; description?: string }[]): string {
+  return rows.map((row) => [row.label, row.url, row.description].join(" | ")).join("\n");
+}
+
+function parseSpotlights(raw: string) {
+  return raw
+    .split("\n")
+    .map((line) => line.split("|").map((part) => part.trim()))
+    .filter((parts) => parts[0])
+    .map((parts) => ({ label: parts[0] ?? "", url: parts[1] ?? "", description: parts[2] ?? "" }));
+}
+
+function SpotlightField({
+  value,
+  onChange,
+}: {
+  value: { label?: string; url?: string; description?: string }[];
+  onChange: (value: { label: string; url: string; description: string }[]) => void;
+}) {
+  const canonical = useMemo(() => formatSpotlights(value), [value]);
+  const [draft, setDraft] = useState(canonical);
+  const [prevCanonical, setPrevCanonical] = useState(canonical);
+
+  if (canonical !== prevCanonical) {
+    setPrevCanonical(canonical);
+    if (formatSpotlights(parseSpotlights(draft)) !== canonical) {
+      setDraft(canonical);
+    }
+  }
+
+  return (
+    <textarea
+      value={draft}
+      rows={4}
+      onChange={(event) => {
+        const nextText = event.target.value;
+        setDraft(nextText);
+        onChange(parseSpotlights(nextText));
+      }}
+      className={inputClass}
+    />
   );
 }
 
@@ -330,13 +475,41 @@ function FieldInput({
           <span
             aria-hidden="true"
             className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-primary ${
-              checked ? "border-ink bg-ink text-primary" : "border-ink/30 bg-canvas text-transparent"
+              checked ? "border-chrome bg-chrome text-primary" : "border-ink/30 bg-canvas text-transparent"
             }`}
           >
             <Check className="h-3.5 w-3.5 stroke-[2.5]" />
           </span>
           <span className="text-sm font-semibold text-ink">{field.label}</span>
         </label>
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
+    );
+  }
+
+  if (field.type === "pills") {
+    const selected = String(value ?? "");
+    const options = field.options ?? [];
+    return (
+      <div>
+        <Label>{field.label}</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {options.map((option) => {
+            const active = selected === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => onChange(active ? "" : option)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                  active ? "bg-chrome text-primary" : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
+                }`}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -363,25 +536,23 @@ function FieldInput({
     );
   }
 
-  if (field.type === "spotlight") {
-    const rows = Array.isArray(value) ? (value as { label?: string; url?: string; description?: string }[]) : [];
-    const text = rows.map((row) => [row.label, row.url, row.description].join(" | ")).join("\n");
+  if (field.type === "images") {
+    const items = Array.isArray(value) ? (value as string[]) : [];
     return (
       <div>
         <Label>{field.label}</Label>
-        <textarea
-          defaultValue={text}
-          rows={4}
-          onChange={(event) => {
-            const parsed = event.target.value
-              .split("\n")
-              .map((line) => line.split("|").map((part) => part.trim()))
-              .filter((parts) => parts[0])
-              .map((parts) => ({ label: parts[0] ?? "", url: parts[1] ?? "", description: parts[2] ?? "" }));
-            onChange(parsed);
-          }}
-          className={inputClass}
-        />
+        <ImagesField value={items} onChange={onChange} />
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
+    );
+  }
+
+  if (field.type === "spotlight") {
+    const rows = Array.isArray(value) ? (value as { label?: string; url?: string; description?: string }[]) : [];
+    return (
+      <div>
+        <Label>{field.label}</Label>
+        <SpotlightField value={rows} onChange={onChange} />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -468,9 +639,27 @@ export default function AdminEditor({
   function updateRow(index: number, patch: Row) {
     if (!collection) return;
     const list = [...(data[collection.key] as Row[])];
-    const next = { ...list[index], ...patch };
-    if (typeof patch.name === "string" && !list[index].slug) next.slug = slugify(patch.name);
-    if (typeof patch.title === "string" && !list[index].slug) next.slug = slugify(patch.title);
+    const current = list[index];
+    const next = { ...current, ...patch };
+    const currentSlug = String(current.slug ?? "");
+    const savedRows = (savedSnapshot[collection.key] as Row[]) ?? [];
+    const isSavedSlug = Boolean(
+      currentSlug && savedRows.some((r) => String(r.slug ?? "") === currentSlug),
+    );
+
+    if (typeof patch.name === "string") {
+      const prevAuto = slugify(String(current.name ?? ""));
+      if (!currentSlug || (!isSavedSlug && currentSlug === prevAuto)) {
+        next.slug = slugify(patch.name);
+      }
+    }
+    if (typeof patch.title === "string") {
+      const prevAuto = slugify(String(current.title ?? ""));
+      if (!currentSlug || (!isSavedSlug && currentSlug === prevAuto)) {
+        next.slug = slugify(patch.title);
+      }
+    }
+
     list[index] = next;
     setData({ ...data, [collection.key]: list });
     setDirty(true);
@@ -528,11 +717,14 @@ export default function AdminEditor({
 
   const tabClass = (active: boolean) =>
     `rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-      active ? "bg-ink text-canvas" : "bg-canvas-soft text-body hover:bg-primary-pale hover:text-ink"
+      active ? "bg-chrome text-on-chrome" : "bg-canvas-soft text-body hover:bg-primary-pale hover:text-ink"
     }`;
 
-  const primaryFields = collection ? collection.fields.filter((f) => !f.advanced) : [];
-  const advancedFields = collection ? collection.fields.filter((f) => f.advanced) : [];
+  const editingRow = editing !== null ? rows[editing] : undefined;
+  const visibleFilter = (f: Field) =>
+    !f.onlyWhenKind || String(editingRow?.kind ?? "guia") === f.onlyWhenKind;
+  const primaryFields = collection ? collection.fields.filter((f) => !f.advanced && visibleFilter(f)) : [];
+  const advancedFields = collection ? collection.fields.filter((f) => f.advanced && visibleFilter(f)) : [];
 
   return (
     <div className="pb-16">
@@ -671,7 +863,7 @@ export default function AdminEditor({
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="p-1 text-mute hover:text-[#a72027]"
+                    className="p-1 text-mute hover:text-danger"
                     aria-label="apagar"
                     title="Apagar"
                   >
@@ -740,9 +932,9 @@ export default function AdminEditor({
         <div
           role="dialog"
           aria-label="Alterações não salvas"
-          className="fixed bottom-6 left-1/2 z-50 flex w-max max-w-[calc(100%-2rem)] -translate-x-1/2 items-center justify-between gap-4 rounded-2xl border border-canvas/15 bg-ink px-5 py-3.5 text-canvas shadow-[0_24px_60px_-12px_rgba(14,15,12,0.55)]"
+          className="fixed bottom-6 left-1/2 z-50 flex w-max max-w-[calc(100%-2rem)] -translate-x-1/2 items-center justify-between gap-4 rounded-2xl border border-on-chrome/15 bg-chrome px-5 py-3.5 text-on-chrome shadow-[0_24px_60px_-12px_rgba(14,15,12,0.55)]"
         >
-          <span className="flex items-center gap-2.5 whitespace-nowrap text-sm font-semibold text-canvas">
+          <span className="flex items-center gap-2.5 whitespace-nowrap text-sm font-semibold text-on-chrome">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-warning" />
             <span className="hidden sm:inline">Você tem alterações não salvas</span>
             <span className="sm:hidden">Alterações não salvas</span>
@@ -752,7 +944,7 @@ export default function AdminEditor({
               type="button"
               onClick={discard}
               disabled={busy}
-              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-3xl px-3.5 text-sm font-semibold text-canvas/80 transition-colors hover:bg-canvas/10 hover:text-canvas disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-3xl px-3.5 text-sm font-semibold text-on-chrome/80 transition-colors hover:bg-on-chrome/10 hover:text-on-chrome disabled:opacity-50"
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
               Desfazer

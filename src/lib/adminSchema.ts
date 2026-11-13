@@ -1,4 +1,4 @@
-export type FieldType = "text" | "textarea" | "tags" | "bool" | "image" | "spotlight" | "select" | "youtube" | "ascendancy";
+export type FieldType = "text" | "textarea" | "tags" | "pills" | "bool" | "image" | "images" | "spotlight" | "select" | "youtube" | "ascendancy";
 
 export type Field = {
   key: string;
@@ -8,6 +8,7 @@ export type Field = {
   hint?: string;
   options?: string[];
   advanced?: boolean;
+  onlyWhenKind?: "farm" | "guia";
 };
 
 export type CollectionKey = "games" | "builds" | "guias" | "links";
@@ -64,6 +65,28 @@ export const collections: CollectionDef[] = [
       { key: "tags", label: "Tags", type: "tags" },
       { key: "note", label: "Comentário", type: "textarea" },
       { key: "featured", label: "Destacar na home", type: "bool" },
+      {
+        key: "budget",
+        label: "Investimento (opcional)",
+        type: "pills",
+        options: ["Zero / SSF", "Barato", "Médio", "High Budget"],
+        hint: "Clique para marcar ou desmarcar. Ajuda o usuário a filtrar.",
+        advanced: true,
+      },
+      {
+        key: "focus",
+        label: "Foco da build (opcional)",
+        type: "pills",
+        options: ["Mapper", "Bosser", "All-rounder", "Sanctum / Trial"],
+        advanced: true,
+      },
+      {
+        key: "playstyle",
+        label: "Estilo / botões (opcional)",
+        type: "pills",
+        options: ["1 botão / Chill", "Médio", "Muitos botões"],
+        advanced: true,
+      },
       { key: "tier", label: "Tier (opcional)", type: "text", placeholder: "S+", advanced: true },
       { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
       { key: "image", label: "Foto customizada (opcional)", type: "image", hint: "Se vazio, usa a thumb do vídeo.", advanced: true },
@@ -79,6 +102,9 @@ export const collections: CollectionDef[] = [
       videoId: "",
       videoTitle: "",
       pobUrl: "",
+      budget: "",
+      focus: "",
+      playstyle: "",
       image: "",
       featured: false,
       tier: "",
@@ -93,11 +119,81 @@ export const collections: CollectionDef[] = [
       { key: "game", label: "Jogo", type: "select", options: gameOptions },
       { key: "kind", label: "Tipo", type: "select", options: ["guia", "farm"] },
       { key: "title", label: "Título", type: "text", placeholder: "Guia dos Atos para novatos" },
-      { key: "videoId", label: "Vídeo do YouTube", type: "youtube", placeholder: "Cole o link do YouTube ou o ID" },
+      {
+        key: "videoId",
+        label: "Vídeo do YouTube (opcional)",
+        type: "youtube",
+        placeholder: "Cole o link do YouTube ou deixe vazio para usar só foto",
+      },
+      {
+        key: "image",
+        label: "Foto / capa (opcional)",
+        type: "image",
+        hint: "Use quando não tiver vídeo, ou junto com o vídeo para mostrar os dois no post.",
+      },
       { key: "metric", label: "Etiqueta", type: "text", placeholder: "20 div/h ou Leveling" },
-      { key: "note", label: "Descrição", type: "textarea" },
+      { key: "note", label: "Resumo curto", type: "textarea" },
+      {
+        key: "atlasImage",
+        label: "Print da Tree do Atlas",
+        type: "image",
+        hint: "Imagem da Atlas Tree usada nesse farm.",
+        onlyWhenKind: "farm",
+      },
+      {
+        key: "atlasUrl",
+        label: "Link da Tree do Atlas (opcional)",
+        type: "text",
+        placeholder: "https://poeplanner.com/…",
+        onlyWhenKind: "farm",
+      },
+      {
+        key: "setupImages",
+        label: "Prints do setup",
+        type: "images",
+        hint: "Scarabs, map device, mapa, regex, ídolos — adicione quantos prints quiser.",
+        onlyWhenKind: "farm",
+      },
+      {
+        key: "regex",
+        label: "Regex do mapa (opcional)",
+        type: "text",
+        placeholder: '"!m q|!el" "m q.*([89]\\d|1\\d\\d)"',
+        onlyWhenKind: "farm",
+      },
+      {
+        key: "setupNotes",
+        label: "Explicação do setup",
+        type: "textarea",
+        placeholder: "Explique passo a passo: scarabs, tier de mapa, investimento, mecânica e dicas…",
+        hint: "Opcional: use '- ' para listas, '1. ' para passos, 'Título:' para seções e 'Dica:' ou 'Atenção:' para destacar.",
+        onlyWhenKind: "farm",
+      },
+      {
+        key: "investment",
+        label: "Investimento inicial (opcional)",
+        type: "pills",
+        options: ["Zero (Alch & Go)", "Baixo", "Médio", "Alto"],
+        onlyWhenKind: "farm",
+        advanced: true,
+      },
+      {
+        key: "buildReq",
+        label: "Exigência da build (opcional)",
+        type: "pills",
+        options: ["Qualquer build", "Clear rápido", "Single target forte", "Tank"],
+        onlyWhenKind: "farm",
+        advanced: true,
+      },
+      {
+        key: "mapHint",
+        label: "Mapa / Waystone recomendado (opcional)",
+        type: "text",
+        placeholder: "Ex: Jungle Valley / Dunes ou T15+",
+        onlyWhenKind: "farm",
+        advanced: true,
+      },
       { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
-      { key: "image", label: "Foto customizada (opcional)", type: "image", advanced: true },
       { key: "slug", label: "Link (slug)", type: "text", hint: "Gerado automaticamente pelo título.", advanced: true },
     ],
     create: () => ({
@@ -111,6 +207,14 @@ export const collections: CollectionDef[] = [
       videoTitle: "",
       pobUrl: "",
       image: "",
+      atlasImage: "",
+      atlasUrl: "",
+      setupImages: [],
+      regex: "",
+      setupNotes: "",
+      investment: "",
+      buildReq: "",
+      mapHint: "",
     }),
   },
   {
@@ -128,6 +232,13 @@ export const collections: CollectionDef[] = [
         hint: "Já vem o favicon do site. Suba uma imagem só se quiser trocar.",
       },
       { key: "category", label: "Categoria", type: "text", placeholder: "Comércio e economia" },
+      {
+        key: "game",
+        label: "Jogo (opcional)",
+        type: "pills",
+        options: ["Ambos", "PoE 1", "PoE 2"],
+        hint: "Se deixar vazio, aparece como compatível com ambos.",
+      },
       { key: "description", label: "O que é / pra que serve", type: "textarea" },
       {
         key: "logoInvert",
@@ -137,7 +248,7 @@ export const collections: CollectionDef[] = [
       },
       { key: "featured", label: "Destacar na home", type: "bool", hint: "Se nenhuma ferramenta for marcada, a home mostra as 6 padrão." },
     ],
-    create: () => ({ name: "", url: "", category: "", description: "", logo: "", logoInvert: false, featured: false }),
+    create: () => ({ name: "", url: "", category: "", game: "", description: "", logo: "", logoInvert: false, featured: false }),
   },
 ];
 

@@ -2,11 +2,15 @@ import Link from "next/link";
 import AscendancyAvatar from "./AscendancyAvatar";
 import VideoThumb from "./VideoThumb";
 import ToolLogo from "./ToolLogo";
-import { hostOf, youtubeWatch } from "@/lib/format";
+import { hostOf, slugify, youtubeWatch } from "@/lib/format";
 import type { Build, Guide, LinkItem } from "@/lib/types";
 
 export function buildHref(build: Build) {
-  return `/jogos/${build.game || "poe1"}/builds/${build.slug}`;
+  return `/jogos/${build.game || "poe1"}/builds/${build.slug || slugify(build.name)}`;
+}
+
+export function farmHref(guide: Guide) {
+  return `/jogos/${guide.game || "poe1"}/farms/${guide.slug || slugify(guide.title)}`;
 }
 
 export function Tag({ children }: { children: React.ReactNode }) {
@@ -122,17 +126,12 @@ export function BuildCard({ build }: { build: Build }) {
 
 export function GuideCard({ guide, large = false }: { guide: Guide; large?: boolean }) {
   const isFarm = guide.kind === "farm";
-  return (
-    <a
-      href={youtubeWatch(guide.videoId)}
-      target="_blank"
-      rel="noreferrer"
-      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
-    >
+  const content = (
+    <>
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={guide.videoId}
-          image={guide.image || undefined}
+          image={guide.image || guide.atlasImage || undefined}
           alt={guide.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
@@ -152,22 +151,47 @@ export function GuideCard({ guide, large = false }: { guide: Guide; large?: bool
         </h3>
         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-body">{guide.note}</p>
       </div>
+    </>
+  );
+
+  if (isFarm) {
+    return (
+      <Link href={farmHref(guide)} className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}>
+        {content}
+      </Link>
+    );
+  }
+
+  const externalHref = guide.videoId
+    ? youtubeWatch(guide.videoId)
+    : guide.atlasUrl || guide.image || "";
+
+  if (!externalHref) {
+    return <div className="card flex flex-col overflow-hidden p-2.5">{content}</div>;
+  }
+
+  return (
+    <a
+      href={externalHref}
+      target="_blank"
+      rel="noreferrer"
+      className={`${interactiveCard} flex flex-col overflow-hidden p-2.5`}
+    >
+      {content}
     </a>
   );
 }
 
 export function FarmRow({ guide }: { guide: Guide }) {
   return (
-    <a
-      href={youtubeWatch(guide.videoId)}
-      target="_blank"
-      rel="noreferrer"
+    <Link
+      href={farmHref(guide)}
       className="group flex min-w-0 items-center gap-3 border-b border-ink/10 py-3 last:border-b-0 sm:gap-4"
     >
       <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-xl bg-canvas-soft sm:w-32">
         <VideoThumb
           videoId={guide.videoId}
-          image={guide.image || undefined}
+          image={guide.image || guide.atlasImage || undefined}
           alt={guide.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
@@ -182,7 +206,7 @@ export function FarmRow({ guide }: { guide: Guide }) {
       {guide.metric ? (
         <span className="badge badge-lime hidden whitespace-nowrap sm:inline-flex">{guide.metric}</span>
       ) : null}
-    </a>
+    </Link>
   );
 }
 
@@ -202,7 +226,14 @@ export function ToolCard({ item }: { item: LinkItem }) {
           <h3 className="font-display text-base font-extrabold leading-tight tracking-tight text-ink">
             {item.name}
           </h3>
-          <span className="text-sm text-mute transition-colors group-hover:text-ink">↗</span>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {item.game && item.game !== "Ambos" ? (
+              <span className="rounded-full bg-canvas px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-body">
+                {item.game}
+              </span>
+            ) : null}
+            <span className="text-sm text-mute transition-colors group-hover:text-ink">↗</span>
+          </div>
         </div>
         <p className="mt-1.5 text-sm leading-relaxed text-body">{item.description}</p>
         <span className="mt-2 block truncate text-[11px] font-medium uppercase tracking-[0.12em] text-mute">

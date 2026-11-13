@@ -55,7 +55,7 @@ export default async function HomePage() {
     <div>
       {/* hero band */}
       <section className="bg-canvas-soft">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-6 px-5 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-6 px-5 py-8 sm:gap-10 sm:py-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch lg:py-16">
           <div className="hero-enter min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="badge badge-ink">{activeGame.name}</span>
@@ -93,6 +93,7 @@ export default async function HomePage() {
 
           <div className="hero-enter min-w-0" style={{ animationDelay: "70ms" }}>
             <LeagueCover
+              gameName={activeGame.name}
               patch={site.leaguePatch}
               name={site.leagueName}
               date={activeGame.releaseDate || site.leagueDate}
@@ -205,7 +206,7 @@ export default async function HomePage() {
                 />
                 <p className="flex items-center gap-2 font-display text-3xl font-extrabold leading-none tracking-[-0.03em] text-ink sm:text-[2.25rem]">
                   Malaka
-                  <span className="rounded-full bg-primary px-2.5 py-1 text-[13px] font-bold tracking-[0.04em] text-ink">
+                  <span className="rounded-full bg-primary px-2.5 py-1 text-[13px] font-bold tracking-[0.04em] text-on-primary">
                     TV
                   </span>
                 </p>

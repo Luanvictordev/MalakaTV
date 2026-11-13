@@ -1,5 +1,29 @@
 import type { Build } from "./types";
 
+export function extractYoutubeId(value?: string): string {
+  const raw = (value ?? "").trim();
+  if (!raw) return "";
+  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return raw;
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") {
+      const id = url.pathname.split("/").filter(Boolean)[0] ?? "";
+      return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : "";
+    }
+    if (host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com")) {
+      const v = url.searchParams.get("v");
+      if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+      const parts = url.pathname.split("/").filter(Boolean);
+      const last = parts[parts.length - 1] ?? "";
+      return /^[a-zA-Z0-9_-]{11}$/.test(last) ? last : "";
+    }
+    return "";
+  } catch {
+    return "";
+  }
+}
+
 export function youtubeWatch(videoId: string): string {
   return `https://www.youtube.com/watch?v=${videoId}`;
 }

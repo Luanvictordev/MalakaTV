@@ -21,7 +21,7 @@ export default async function LoginPage({
       <div className="mx-auto max-w-[460px] px-5 py-16">
         <Link href="/" className="flex items-center gap-2">
           <span className="font-display text-xl font-extrabold tracking-tight text-ink">Malaka</span>
-          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-ink">TV</span>
+          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">TV</span>
         </Link>
 
         <h1 className="mt-8 font-display text-[2.25rem] font-extrabold leading-none tracking-[-0.03em] text-ink">

@@ -16,7 +16,8 @@ export async function signIn(_prevState: { error: string } | null, formData: For
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: "Email ou senha inválidos." };
 
-  redirect(next.startsWith("/") ? next : "/admin");
+  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/admin";
+  redirect(safeNext);
 }
 
 export async function signOut() {

@@ -22,6 +22,9 @@ export type Build = {
   videoTitle: string;
   image: string;
   pobUrl?: string;
+  budget?: string;
+  focus?: string;
+  playstyle?: string;
   featured: boolean;
   tier: string;
 };
@@ -36,6 +39,14 @@ export type Guide = {
   videoId: string;
   videoTitle: string;
   image: string;
+  atlasImage?: string;
+  atlasUrl?: string;
+  setupImages?: string[];
+  setupNotes?: string;
+  regex?: string;
+  investment?: string;
+  buildReq?: string;
+  mapHint?: string;
 };
 
 export type LinkItem = {
@@ -43,6 +54,7 @@ export type LinkItem = {
   url: string;
   category: string;
   description: string;
+  game?: string;
   logo?: string;
   logoInvert?: boolean;
   featured?: boolean;

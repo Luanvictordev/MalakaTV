@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { cache } from "react";
 import { createClient } from "./supabase/server";
 
 const contentDir = path.join(process.cwd(), "content");
@@ -18,17 +19,21 @@ function readLocal<T>(key: CollectionKey): T {
   return JSON.parse(fs.readFileSync(path.join(contentDir, collectionFiles[key]), "utf8")) as T;
 }
 
+const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
+  const supabase = await createClient();
+  if (supabase) {
+    const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
+    if (!error && data && data.data) return data.data;
+  }
+  return readLocal<unknown>(key);
+});
+
 /**
  * Lê uma coleção. Se o Supabase estiver configurado e tiver o registro, vem do banco;
  * senão cai pro JSON do repositório (primeiro deploy / desenvolvimento sem credenciais).
  */
 export async function readCollection<T>(key: CollectionKey): Promise<T> {
-  const supabase = await createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
-    if (!error && data && data.data) return data.data as T;
-  }
-  return readLocal<T>(key);
+  return (await readCached(key)) as T;
 }
 
 /** Grava uma coleção no Supabase quando configurado; senão, no arquivo local. */

@@ -40,7 +40,7 @@ export default function LoginForm({ next }: { next: string }) {
       </div>
 
       {state?.error ? (
-        <p className="rounded-xl bg-[#fdeaea] px-3 py-2 text-sm font-medium text-[#a72027]">{state.error}</p>
+        <p className="rounded-xl bg-danger-bg px-3 py-2 text-sm font-medium text-danger">{state.error}</p>
       ) : null}
 
       <button type="submit" disabled={pending} className="btn btn-primary w-full disabled:opacity-60">

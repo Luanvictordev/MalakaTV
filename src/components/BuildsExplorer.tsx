@@ -31,15 +31,19 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [selectedClass, setSelectedClass] = useState(() => searchParams.get("classe") ?? "Todas");
   const [selectedTag, setSelectedTag] = useState(() => searchParams.get("tag") ?? "Todas");
+  const [selectedBudget, setSelectedBudget] = useState(() => searchParams.get("budget") ?? "Todos");
+  const [selectedFocus, setSelectedFocus] = useState(() => searchParams.get("foco") ?? "Todos");
   const [classesOpen, setClassesOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   const syncUrl = useCallback(
-    (next: { q: string; classe: string; tag: string }) => {
+    (next: { q: string; classe: string; tag: string; budget: string; foco: string }) => {
       const params = new URLSearchParams();
       if (next.q.trim()) params.set("q", next.q.trim());
       if (next.classe !== "Todas") params.set("classe", next.classe);
       if (next.tag !== "Todas") params.set("tag", next.tag);
+      if (next.budget !== "Todos") params.set("budget", next.budget);
+      if (next.foco !== "Todos") params.set("foco", next.foco);
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
@@ -48,28 +52,48 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
 
   const updateQuery = (value: string) => {
     setQuery(value);
-    syncUrl({ q: value, classe: selectedClass, tag: selectedTag });
+    syncUrl({ q: value, classe: selectedClass, tag: selectedTag, budget: selectedBudget, foco: selectedFocus });
   };
 
   const updateClass = (value: string) => {
     setSelectedClass(value);
-    syncUrl({ q: query, classe: value, tag: selectedTag });
+    syncUrl({ q: query, classe: value, tag: selectedTag, budget: selectedBudget, foco: selectedFocus });
   };
 
   const updateTag = (value: string) => {
     setSelectedTag(value);
-    syncUrl({ q: query, classe: selectedClass, tag: value });
+    syncUrl({ q: query, classe: selectedClass, tag: value, budget: selectedBudget, foco: selectedFocus });
+  };
+
+  const updateBudget = (value: string) => {
+    setSelectedBudget(value);
+    syncUrl({ q: query, classe: selectedClass, tag: selectedTag, budget: value, foco: selectedFocus });
+  };
+
+  const updateFocus = (value: string) => {
+    setSelectedFocus(value);
+    syncUrl({ q: query, classe: selectedClass, tag: selectedTag, budget: selectedBudget, foco: value });
   };
 
   const clearAll = () => {
     setQuery("");
     setSelectedClass("Todas");
     setSelectedTag("Todas");
-    syncUrl({ q: "", classe: "Todas", tag: "Todas" });
+    setSelectedBudget("Todos");
+    setSelectedFocus("Todos");
+    syncUrl({ q: "", classe: "Todas", tag: "Todas", budget: "Todos", foco: "Todos" });
   };
 
   const classes = useMemo(() => uniqueClasses(builds), [builds]);
   const tags = useMemo(() => uniqueTags(builds), [builds]);
+  const budgets = useMemo(
+    () => Array.from(new Set(builds.map((b) => b.budget?.trim() ?? "").filter(Boolean))),
+    [builds],
+  );
+  const focuses = useMemo(
+    () => Array.from(new Set(builds.map((b) => b.focus?.trim() ?? "").filter(Boolean))),
+    [builds],
+  );
 
   const classCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -102,14 +126,26 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
     return builds.filter((build) => {
       const matchesQuery =
         !term ||
-        [build.name, build.note, build.className, ...build.tags].join(" ").toLowerCase().includes(term);
+        [build.name, build.note, build.className, build.budget, build.focus, build.playstyle, ...build.tags]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(term);
       const matchesClass = selectedClass === "Todas" || build.className === selectedClass;
       const matchesTag = selectedTag === "Todas" || build.tags.includes(selectedTag);
-      return matchesQuery && matchesClass && matchesTag;
+      const matchesBudget = selectedBudget === "Todos" || build.budget === selectedBudget;
+      const matchesFocus = selectedFocus === "Todos" || build.focus === selectedFocus;
+      return matchesQuery && matchesClass && matchesTag && matchesBudget && matchesFocus;
     });
-  }, [builds, query, selectedClass, selectedTag]);
+  }, [builds, query, selectedClass, selectedTag, selectedBudget, selectedFocus]);
 
-  const hasFilters = Boolean(query || selectedClass !== "Todas" || selectedTag !== "Todas");
+  const hasFilters = Boolean(
+    query ||
+      selectedClass !== "Todas" ||
+      selectedTag !== "Todas" ||
+      selectedBudget !== "Todos" ||
+      selectedFocus !== "Todos",
+  );
   const hasClassFilter = selectedClass !== "Todas";
   const isCollapsed = !hasFilters && !showAll && filtered.length > INITIAL_BUILD_LIMIT;
   const visibleBuilds = isCollapsed ? filtered.slice(0, INITIAL_BUILD_LIMIT) : filtered;
@@ -155,7 +191,7 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
               >
                 <span className="eyebrow text-ink">Classes</span>
                 {hasClassFilter ? (
-                  <span className="rounded-full bg-ink px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  <span className="rounded-full bg-chrome px-2 py-0.5 text-[10px] font-semibold text-primary">
                     {selectedClass}
                   </span>
                 ) : null}
@@ -171,7 +207,7 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
                 <button
                   type="button"
                   onClick={() => updateClass("Todas")}
-                  className="rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-opacity hover:opacity-90"
+                  className="rounded-full bg-chrome px-2.5 py-0.5 text-[11px] font-semibold text-primary transition-opacity hover:opacity-90"
                 >
                   Ver todas
                 </button>
@@ -210,7 +246,7 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
                         onClick={() => updateClass(active ? "Todas" : option)}
                         className={`group relative flex flex-col items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-center transition-all duration-150 ${
                           active
-                            ? "bg-ink text-canvas ring-2 ring-primary"
+                            ? "bg-chrome text-on-chrome ring-2 ring-primary"
                             : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
                         }`}
                       >
@@ -236,8 +272,115 @@ export default function BuildsExplorer({ builds }: { builds: Build[] }) {
               </div>
             ))}
           </div>
+
+          {budgets.length > 0 || focuses.length > 0 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink/10 pt-4">
+              {budgets.map((budget) => {
+                const active = selectedBudget === budget;
+                return (
+                  <button
+                    key={`budget-${budget}`}
+                    type="button"
+                    onClick={() => updateBudget(active ? "Todos" : budget)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                      active ? "bg-chrome text-primary" : "bg-canvas-soft text-body hover:bg-primary-pale hover:text-ink"
+                    }`}
+                  >
+                    {budget}
+                  </button>
+                );
+              })}
+              {focuses.map((focus) => {
+                const active = selectedFocus === focus;
+                return (
+                  <button
+                    key={`focus-${focus}`}
+                    type="button"
+                    onClick={() => updateFocus(active ? "Todos" : focus)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                      active ? "bg-chrome text-primary" : "bg-canvas-soft text-body hover:bg-primary-pale hover:text-ink"
+                    }`}
+                  >
+                    {focus}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
+
+      <AnimatePresence>
+        {hasFilters ? (
+          <m.div
+            key="active-filter-chips"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.16, ease: EASE_OUT_EXPO }}
+            className="mt-4 flex flex-wrap items-center gap-2"
+          >
+            <span className="text-xs font-semibold text-mute">Filtros ativos:</span>
+            {query.trim() ? (
+              <button
+                type="button"
+                onClick={() => updateQuery("")}
+                className="inline-flex items-center gap-1.5 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                <span>&ldquo;{query.trim()}&rdquo;</span>
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            ) : null}
+            {selectedClass !== "Todas" ? (
+              <button
+                type="button"
+                onClick={() => updateClass("Todas")}
+                className="inline-flex items-center gap-1.5 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                <span>{selectedClass}</span>
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            ) : null}
+            {selectedTag !== "Todas" ? (
+              <button
+                type="button"
+                onClick={() => updateTag("Todas")}
+                className="inline-flex items-center gap-1.5 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                <span>{selectedTag}</span>
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            ) : null}
+            {selectedBudget !== "Todos" ? (
+              <button
+                type="button"
+                onClick={() => updateBudget("Todos")}
+                className="inline-flex items-center gap-1.5 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                <span>{selectedBudget}</span>
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            ) : null}
+            {selectedFocus !== "Todos" ? (
+              <button
+                type="button"
+                onClick={() => updateFocus("Todos")}
+                className="inline-flex items-center gap-1.5 rounded-full bg-chrome px-3 py-1 text-xs font-semibold text-primary transition-opacity hover:opacity-90"
+              >
+                <span>{selectedFocus}</span>
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={clearAll}
+              className="ml-1 text-xs font-semibold text-ink underline-offset-4 hover:underline"
+            >
+              Limpar todos
+            </button>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout" initial={false}>

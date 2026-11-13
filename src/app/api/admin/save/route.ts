@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { slugify } from "@/lib/format";
 import { writeCollection, type CollectionKey } from "@/lib/store";
 import { getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
 
@@ -31,8 +32,27 @@ export async function POST(request: Request) {
     return Response.json({ error: "Nada pra salvar." }, { status: 400 });
   }
 
+  const collection = body.collection as CollectionKey;
+  if (collection === "site") {
+    if (typeof body.data !== "object" || Array.isArray(body.data)) {
+      return Response.json({ error: "Dados do site inválidos." }, { status: 400 });
+    }
+  } else if (!Array.isArray(body.data)) {
+    return Response.json({ error: "A coleção precisa ser uma lista." }, { status: 400 });
+  }
+
+  let payload = body.data;
+  if (collection === "games" || collection === "builds" || collection === "guias") {
+    payload = (body.data as Record<string, unknown>[]).map((item, index) => {
+      const existing = typeof item.slug === "string" ? item.slug.trim() : "";
+      if (existing) return item;
+      const source = String(item.name ?? item.title ?? "");
+      return { ...item, slug: slugify(source) || `${collection}-${index + 1}` };
+    });
+  }
+
   try {
-    const storage = await writeCollection(body.collection as CollectionKey, body.data);
+    const storage = await writeCollection(collection, payload);
     revalidatePath("/", "layout");
     return Response.json({ ok: true, storage });
   } catch (error) {

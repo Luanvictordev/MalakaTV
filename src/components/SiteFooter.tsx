@@ -21,7 +21,7 @@ export default async function SiteFooter() {
               className="h-7 w-7 rounded-full object-cover"
             />
             Malaka
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-ink">TV</span>
+            <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">TV</span>
           </p>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-body">{site.bio}</p>
           <a href={site.youtube} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm mt-5">
@@ -40,9 +40,12 @@ export default async function SiteFooter() {
                     {game.name}
                   </Link>
                 ) : (
-                  <span className="text-mute">
+                  <Link
+                    href={`/jogos/${game.slug}`}
+                    className="font-medium text-mute transition-colors hover:text-ink"
+                  >
                     {game.name} <span className="text-[11px]">· em breve</span>
-                  </span>
+                  </Link>
                 )}
               </li>
             ))}
