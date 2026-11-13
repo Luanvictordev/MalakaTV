@@ -96,12 +96,12 @@ export default async function GamePage({ params }: Params) {
             </a>
             {guideCards.length > 0 ? (
               <a href="#guias" className="btn btn-tertiary btn-sm">
-                Guias ({guideCards.length})
+                {site.guidesTitle || "Guias"} ({guideCards.length})
               </a>
             ) : null}
             {farms.length > 0 ? (
               <a href="#farms" className="btn btn-tertiary btn-sm">
-                FARMs ({farms.length})
+                {site.farmsTitle || "FARMs"} ({farms.length})
               </a>
             ) : null}
           </nav>
@@ -127,9 +127,9 @@ export default async function GamePage({ params }: Params) {
         <section id="guias" className="scroll-mt-20 border-t border-ink/10 bg-canvas py-12">
           <div className="mx-auto max-w-[1200px] px-5">
             <SectionTitle
-              eyebrow="Fundamentos"
-              title="Guias"
-              description={`Guias essenciais pra começar bem no ${game.shortName}.`}
+              eyebrow={site.guidesEyebrow || "Fundamentos"}
+              title={site.guidesTitle || "Guias"}
+              description={site.guidesDescription || `Guias essenciais pra começar bem no ${game.shortName}.`}
             />
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {guideCards.map((guide) => (
@@ -144,9 +144,9 @@ export default async function GamePage({ params }: Params) {
         <section id="farms" className="scroll-mt-20 bg-canvas-soft py-12">
           <div className="mx-auto max-w-[1200px] px-5">
             <SectionTitle
-              eyebrow="Economia"
-              title="FARMs que pagam"
-              description="Farms seguros e rentáveis pra evoluir no jogo."
+              eyebrow={site.farmsEyebrow || "Economia"}
+              title={site.farmsTitle || "FARMs que pagam"}
+              description={site.farmsDescription || "Farms seguros e rentáveis pra evoluir no jogo."}
             />
             <div className="card mt-7 p-5">
               {farms.map((farm) => (

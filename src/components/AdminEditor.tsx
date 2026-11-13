@@ -685,14 +685,28 @@ export default function AdminEditor({
           <div className="card-soft p-5">
             {collection && editing !== null && rows[editing] ? (
               <div className="grid gap-4">
-                {primaryFields.map((field) => (
-                  <FieldInput
-                    key={`${editing}-${field.key}`}
-                    field={field}
-                    value={rows[editing][field.key]}
-                    onChange={(value) => updateRow(editing, { [field.key]: value })}
-                  />
-                ))}
+                {primaryFields.map((field) => {
+                  const resolvedField =
+                    field.key === "game" && field.type === "select"
+                      ? {
+                          ...field,
+                          options: Array.from(
+                            new Set([
+                              ...data.games.map((g) => String(g.slug ?? "").trim()).filter(Boolean),
+                              ...(field.options ?? []),
+                            ]),
+                          ),
+                        }
+                      : field;
+                  return (
+                    <FieldInput
+                      key={`${editing}-${field.key}`}
+                      field={resolvedField}
+                      value={rows[editing][field.key]}
+                      onChange={(value) => updateRow(editing, { [field.key]: value })}
+                    />
+                  );
+                })}
 
                 {advancedFields.length > 0 ? (
                   <details className="rounded-2xl border border-ink/10 bg-canvas/60 p-4">

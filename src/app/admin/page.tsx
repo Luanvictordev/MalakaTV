@@ -82,9 +82,9 @@ export default async function AdminPage() {
             </p>
           </div>
           <div className="card-soft p-5">
-            <p className="font-display text-base font-extrabold text-ink">Cuidado com o slug</p>
+            <p className="font-display text-base font-extrabold text-ink">Não mude o link depois</p>
             <p className="mt-1.5 text-sm leading-relaxed text-body">
-              O slug é o endereço da página. Se mudar depois de publicado, o link antigo quebra.
+              O link da página é criado sozinho pelo nome. Se alterar depois de publicar, quem já salvou o endereço antigo não consegue mais abrir.
             </p>
           </div>
         </div>

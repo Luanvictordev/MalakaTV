@@ -36,16 +36,20 @@ export default async function HomePage() {
   const guideCards = guides.filter((guide) => guide.kind === "guia");
   const farms = guides.filter((guide) => guide.kind === "farm");
 
-  const homeTools = [
-    "Awakened PoE Trade",
-    "poe.ninja — builds",
-    "FilterBlade",
-    "Exile Leveling",
-    "poe.re",
-    "Boss of Exile",
-  ]
-    .map((name) => links.find((item) => item.name === name))
-    .filter(Boolean);
+  const featuredTools = links.filter((item) => item.featured);
+  const homeTools =
+    featuredTools.length > 0
+      ? featuredTools
+      : [
+          "Awakened PoE Trade",
+          "poe.ninja — builds",
+          "FilterBlade",
+          "Exile Leveling",
+          "poe.re",
+          "Boss of Exile",
+        ]
+          .map((name) => links.find((item) => item.name === name))
+          .filter(Boolean);
 
   return (
     <div>
@@ -108,9 +112,9 @@ export default async function HomePage() {
       <section className="bg-canvas-soft py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <SectionTitle
-            eyebrow={activeGame.releaseLabel || activeGame.shortName}
-            title="Builds em destaque"
-            description="As que o Malaka indicou primeiro, com vídeo completo e resumo direto."
+            eyebrow={site.buildsEyebrow || activeGame.releaseLabel || activeGame.shortName}
+            title={site.buildsTitle || "Builds em destaque"}
+            description={site.buildsDescription || "As que o Malaka indicou primeiro, com vídeo completo e resumo direto."}
             action={{ label: `Todas as ${builds.length} builds →`, href: `/jogos/${activeGame.slug}` }}
           />
           <Reveal className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-[1.45fr_1fr]">
@@ -129,9 +133,9 @@ export default async function HomePage() {
         <div className="mx-auto max-w-[1200px] px-5">
           <div className="rule mb-8 sm:mb-12" />
           <SectionTitle
-            eyebrow="Comece por aqui"
-            title="Guias pra começar bem"
-            description={`Os guias essenciais pra começar bem no ${activeGame.shortName}.`}
+            eyebrow={site.guidesEyebrow || "Comece por aqui"}
+            title={site.guidesTitle || "Guias pra começar bem"}
+            description={site.guidesDescription || `Os guias essenciais pra começar bem no ${activeGame.shortName}.`}
             action={{ label: "Ver guias →", href: `/jogos/${activeGame.slug}#guias` }}
           />
           <StaggerGroup className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2">
@@ -150,9 +154,9 @@ export default async function HomePage() {
           <Reveal>
             <div className="card p-5 sm:p-7">
               <SectionTitle
-                eyebrow="Economia"
-                title="FARMs que pagam"
-                description="Farms seguros e rentáveis pra evoluir rápido."
+                eyebrow={site.farmsEyebrow || "Economia"}
+                title={site.farmsTitle || "FARMs que pagam"}
+                description={site.farmsDescription || "Farms seguros e rentáveis pra evoluir rápido."}
               />
               <div className="mt-3">
                 {farms.map((farm) => (
@@ -168,9 +172,9 @@ export default async function HomePage() {
       <section className="bg-canvas py-10 sm:py-16">
         <div className="mx-auto max-w-[1200px] px-5">
           <SectionTitle
-            eyebrow="Ferramentas"
-            title="O que ele usa, explicado"
-            description="Planners, filtros, overlays e comunidade — cada site explicado e com link direto."
+            eyebrow={site.toolsEyebrow || "Ferramentas"}
+            title={site.toolsTitle || "O que ele usa, explicado"}
+            description={site.toolsDescription || "Planners, filtros, overlays e comunidade — cada site explicado e com link direto."}
             action={{ label: "Ver todas →", href: "/ferramentas" }}
           />
           <StaggerGroup className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">

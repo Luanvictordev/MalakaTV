@@ -45,6 +45,7 @@ export type LinkItem = {
   description: string;
   logo?: string;
   logoInvert?: boolean;
+  featured?: boolean;
 };
 
 export type Spotlight = {
@@ -73,4 +74,16 @@ export type SiteConfig = {
   leagueUrl: string;
   leagueImage: string;
   spotlights: Spotlight[];
+  buildsEyebrow?: string;
+  buildsTitle?: string;
+  buildsDescription?: string;
+  guidesEyebrow?: string;
+  guidesTitle?: string;
+  guidesDescription?: string;
+  farmsEyebrow?: string;
+  farmsTitle?: string;
+  farmsDescription?: string;
+  toolsEyebrow?: string;
+  toolsTitle?: string;
+  toolsDescription?: string;
 };

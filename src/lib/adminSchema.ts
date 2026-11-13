@@ -135,8 +135,9 @@ export const collections: CollectionDef[] = [
         type: "bool",
         hint: "Marque quando a logo for preta e sumir no fundo escuro.",
       },
+      { key: "featured", label: "Destacar na home", type: "bool", hint: "Se nenhuma ferramenta for marcada, a home mostra as 6 padrão." },
     ],
-    create: () => ({ name: "", url: "", category: "", description: "", logo: "", logoInvert: false }),
+    create: () => ({ name: "", url: "", category: "", description: "", logo: "", logoInvert: false, featured: false }),
   },
 ];
 
@@ -160,4 +161,16 @@ export const siteFields: Field[] = [
   { key: "leagueUrl", label: "Link da liga", type: "text", placeholder: "https://www.pathofexile.com/covens" },
   { key: "leagueImage", label: "Capa da liga (opcional)", type: "image", hint: "Se vazio, a capa é a arte da umbra desenhada no site." },
   { key: "spotlights", label: "Destaques da liga", type: "spotlight", hint: "Um por linha: título | link | descrição" },
+  { key: "buildsEyebrow", label: "Seção Builds — etiqueta", type: "text", placeholder: "Padrão: etiqueta de lançamento do jogo" },
+  { key: "buildsTitle", label: "Seção Builds — título", type: "text", placeholder: "Builds em destaque" },
+  { key: "buildsDescription", label: "Seção Builds — descrição", type: "textarea", placeholder: "As que o Malaka indicou primeiro, com vídeo completo e resumo direto." },
+  { key: "guidesEyebrow", label: "Seção Guias — etiqueta", type: "text", placeholder: "Comece por aqui" },
+  { key: "guidesTitle", label: "Seção Guias — título", type: "text", placeholder: "Guias pra começar bem" },
+  { key: "guidesDescription", label: "Seção Guias — descrição", type: "textarea", placeholder: "Os guias essenciais pra começar bem." },
+  { key: "farmsEyebrow", label: "Seção Farms — etiqueta", type: "text", placeholder: "Economia" },
+  { key: "farmsTitle", label: "Seção Farms — título", type: "text", placeholder: "FARMs que pagam" },
+  { key: "farmsDescription", label: "Seção Farms — descrição", type: "textarea", placeholder: "Farms seguros e rentáveis pra evoluir rápido." },
+  { key: "toolsEyebrow", label: "Seção Ferramentas — etiqueta", type: "text", placeholder: "Ferramentas" },
+  { key: "toolsTitle", label: "Seção Ferramentas — título", type: "text", placeholder: "O que ele usa, explicado" },
+  { key: "toolsDescription", label: "Seção Ferramentas — descrição", type: "textarea", placeholder: "Planners, filtros, overlays e comunidade — cada site explicado e com link direto." },
 ];
