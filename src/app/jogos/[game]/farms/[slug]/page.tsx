@@ -5,8 +5,10 @@ import { ExternalLink } from "lucide-react";
 import CopyLinkButton from "@/components/CopyLinkButton";
 import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import { FarmRow } from "@/components/Cards";
+import AtlasTreeViewer from "@/components/AtlasTreeViewer";
 import SetupNotes from "@/components/SetupNotes";
 import ZoomableImage from "@/components/ZoomableImage";
+import { resolveAtlasTreeUrl } from "@/lib/atlasTree";
 import { getGame, getGuide, getGuides, getSite, youtubeThumb, youtubeWatch } from "@/lib/content";
 import { SITE_URL } from "@/lib/seo";
 
@@ -56,6 +58,7 @@ export default async function FarmPage({ params }: Params) {
   const pageUrl = `${SITE_URL}/jogos/${guide.game}/farms/${guide.slug}`;
   const thumbUrl = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : undefined);
   const setupImages = (guide.setupImages ?? []).filter(Boolean);
+  const decodedAtlas = guide.atlasUrl ? await resolveAtlasTreeUrl(guide.atlasUrl) : null;
 
   const jsonLd = [
     {
@@ -205,7 +208,7 @@ export default async function FarmPage({ params }: Params) {
           </div>
         ) : null}
 
-        {guide.atlasImage ? (
+        {decodedAtlas || guide.atlasImage ? (
           <section className="mt-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
@@ -226,12 +229,21 @@ export default async function FarmPage({ params }: Params) {
               ) : null}
             </div>
             <div className="card mt-4 overflow-hidden p-2.5">
-              <ZoomableImage
-                src={guide.atlasImage}
-                alt={`Tree do Atlas — ${guide.title}`}
-                caption={`Tree do Atlas · ${guide.title}`}
-                className="aspect-[16/9]"
-              />
+              {decodedAtlas ? (
+                <AtlasTreeViewer
+                  allocatedHashes={decodedAtlas.hashes}
+                  masteryEffects={decodedAtlas.masteryEffects}
+                  atlasUrl={guide.atlasUrl}
+                  title={guide.title}
+                />
+              ) : guide.atlasImage ? (
+                <ZoomableImage
+                  src={guide.atlasImage}
+                  alt={`Tree do Atlas — ${guide.title}`}
+                  caption={`Tree do Atlas · ${guide.title}`}
+                  className="aspect-[16/9]"
+                />
+              ) : null}
             </div>
           </section>
         ) : null}

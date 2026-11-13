@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 import { collections, siteFields, type Field, type CollectionKey } from "@/lib/adminSchema";
+import { decodeAtlasTreePayload, extractAtlasPayloadFromUrl } from "@/lib/atlasTree";
 import { extractYoutubeId, slugify, youtubeThumb } from "@/lib/format";
 
 type Row = Record<string, unknown>;
@@ -395,13 +396,146 @@ function SpotlightField({
   );
 }
 
+type AtlasCheckState =
+  | { status: "empty" }
+  | { status: "loading" }
+  | { status: "valid"; count: number }
+  | { status: "external" };
+
+function useAtlasResolution(rawUrl: string): AtlasCheckState {
+  const trimmed = rawUrl.trim();
+  const target = useMemo(() => (trimmed ? extractAtlasPayloadFromUrl(trimmed) : null), [trimmed]);
+  const syncDecoded = useMemo(
+    () => (target?.kind === "payload" ? decodeAtlasTreePayload(target.payload) : null),
+    [target],
+  );
+
+  const [asyncState, setAsyncState] = useState<{ url: string; count: number | null }>({
+    url: "",
+    count: null,
+  });
+
+  useEffect(() => {
+    if (target?.kind !== "poeplanner-short") return;
+    let active = true;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/atlas/resolve?url=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+        });
+        const json = await res.json();
+        if (!active) return;
+        setAsyncState({
+          url: trimmed,
+          count: json.ok && typeof json.count === "number" ? json.count : 0,
+        });
+      } catch {
+        if (!active) return;
+        setAsyncState({ url: trimmed, count: 0 });
+      }
+    }, 250);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [target, trimmed]);
+
+  if (!trimmed) return { status: "empty" };
+  if (syncDecoded) return { status: "valid", count: syncDecoded.hashes.length };
+  if (target?.kind === "poeplanner-short") {
+    if (asyncState.url !== trimmed || asyncState.count === null) return { status: "loading" };
+    return asyncState.count > 0 ? { status: "valid", count: asyncState.count } : { status: "external" };
+  }
+  return { status: "external" };
+}
+
+function AtlasUrlField({
+  value,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+}) {
+  const resolution = useAtlasResolution(value);
+
+  return (
+    <div className="space-y-2">
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className={inputClass}
+      />
+      {resolution.status === "loading" ? (
+        <p className="rounded-xl border border-ink/10 bg-canvas px-3.5 py-2.5 text-xs text-body">
+          Lendo os pontos do link do PoE Planner…
+        </p>
+      ) : null}
+      {resolution.status === "valid" ? (
+        <div className="rounded-xl border border-positive-deep/25 bg-primary-pale/70 px-3.5 py-2.5 text-xs leading-relaxed text-positive-deep">
+          <p className="font-semibold">
+            ✓ Tree interativa pronta ({resolution.count} pontos detectados)
+          </p>
+          <p className="mt-0.5">
+            O site já vai exibir o Atlas interativo com zoom sem perder qualidade e descrição nos nodes. Não precisa enviar print da foto do Atlas!
+          </p>
+        </div>
+      ) : null}
+      {resolution.status === "external" ? (
+        <p className="rounded-xl border border-warning/40 bg-warning/10 px-3.5 py-2.5 text-xs leading-relaxed text-ink">
+          Esse link vai aparecer no botão &ldquo;Abrir Atlas&rdquo;, mas não tem o código da tree para desenhar o board. Para gerar o Atlas interativo, cole o link completo (PoEDB / PoE Planner / Path of Exile).
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function AtlasImageField({
+  value,
+  atlasUrl,
+  onChange,
+}: {
+  value: string;
+  atlasUrl: string;
+  onChange: (value: string) => void;
+}) {
+  const resolution = useAtlasResolution(atlasUrl);
+  const [forceUpload, setForceUpload] = useState(false);
+
+  if (resolution.status === "valid" && !value && !forceUpload) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-ink/10 bg-canvas px-3.5 py-3 text-xs text-body">
+        <span>
+          Você já colou o link da Atlas Tree acima — a árvore interativa será mostrada automaticamente com qualidade máxima. Não é necessário subir print.
+        </span>
+        <button
+          type="button"
+          onClick={() => setForceUpload(true)}
+          className="shrink-0 font-semibold text-ink underline-offset-4 hover:underline"
+        >
+          Enviar print mesmo assim
+        </button>
+      </div>
+    );
+  }
+
+  return <ImageField value={value} onChange={onChange} />;
+}
+
 function FieldInput({
   field,
   value,
+  row,
   onChange,
 }: {
   field: Field;
   value: unknown;
+  row?: Row;
   onChange: (value: unknown) => void;
 }) {
   if (field.type === "textarea") {
@@ -530,7 +664,15 @@ function FieldInput({
     return (
       <div>
         <Label>{field.label}</Label>
-        <ImageField value={String(value ?? "")} onChange={onChange} />
+        {field.key === "atlasImage" ? (
+          <AtlasImageField
+            value={String(value ?? "")}
+            atlasUrl={String(row?.atlasUrl ?? "")}
+            onChange={onChange}
+          />
+        ) : (
+          <ImageField value={String(value ?? "")} onChange={onChange} />
+        )}
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -553,6 +695,20 @@ function FieldInput({
       <div>
         <Label>{field.label}</Label>
         <SpotlightField value={rows} onChange={onChange} />
+        {field.hint ? <Hint>{field.hint}</Hint> : null}
+      </div>
+    );
+  }
+
+  if (field.key === "atlasUrl") {
+    return (
+      <div>
+        <Label>{field.label}</Label>
+        <AtlasUrlField
+          value={String(value ?? "")}
+          placeholder={field.placeholder}
+          onChange={onChange}
+        />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -895,6 +1051,7 @@ export default function AdminEditor({
                       key={`${editing}-${field.key}`}
                       field={resolvedField}
                       value={rows[editing][field.key]}
+                      row={rows[editing]}
                       onChange={(value) => updateRow(editing, { [field.key]: value })}
                     />
                   );
@@ -912,6 +1069,7 @@ export default function AdminEditor({
                           key={`${editing}-${field.key}`}
                           field={field}
                           value={rows[editing][field.key]}
+                          row={rows[editing]}
                           onChange={(value) => updateRow(editing, { [field.key]: value })}
                         />
                       ))}
