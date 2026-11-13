@@ -15,6 +15,18 @@ export const metadata: Metadata = {
     description:
       "Os sites e overlays que o MalakaTV usa: planners, trade, preço, filtros e comunidade — cada um explicado.",
     url: "/ferramentas",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "MalakaTV — Ferramentas",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/opengraph-image"],
   },
 };
 

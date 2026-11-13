@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createElement } from "react";
+import { ImageResponse } from "next/og";
 import { resolveAtlasTreeUrl } from "@/lib/atlasTree";
+import bundledAtlasTree from "../../../../../public/atlas/atlas-tree-3.30.json";
 
 type RawNode = {
   isNotable?: boolean;
@@ -79,8 +82,13 @@ function buildOrbitAngles(skillsPerOrbit: number[]): number[][] {
 function getGeometry(): CachedAtlasGeometry {
   if (cachedGeometry) return cachedGeometry;
 
-  const jsonPath = path.join(process.cwd(), "public", "atlas", "atlas-tree-3.30.json");
-  const raw = JSON.parse(fs.readFileSync(jsonPath, "utf8")) as RawAtlasJson;
+  let raw: RawAtlasJson;
+  try {
+    const jsonPath = path.join(process.cwd(), "public", "atlas", "atlas-tree-3.30.json");
+    raw = JSON.parse(fs.readFileSync(jsonPath, "utf8")) as RawAtlasJson;
+  } catch {
+    raw = bundledAtlasTree as unknown as RawAtlasJson;
+  }
 
   const orbitAngles = buildOrbitAngles(raw.constants.skillsPerOrbit);
   const orbitRadii = raw.constants.orbitRadii;
@@ -307,6 +315,27 @@ export async function GET(request: Request) {
   }
   <g>${activeCircles.join("")}</g>
 </svg>`;
+
+  if (searchParams.get("format") === "png") {
+    const dataUrl = `data:image/svg+xml;base64,${Buffer.from(svg, "utf8").toString("base64")}`;
+    return new ImageResponse(
+      createElement("img", {
+        src: dataUrl,
+        alt: "",
+        width: 1280,
+        height: 720,
+        style: { width: "1280px", height: "720px" },
+      }),
+      {
+        width: 1280,
+        height: 720,
+        headers: {
+          "Content-Type": "image/png",
+          "Cache-Control": "public, max-age=86400, s-maxage=86400",
+        },
+      },
+    );
+  }
 
   return new Response(svg, {
     headers: {

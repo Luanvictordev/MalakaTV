@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { cache } from "react";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import buildsData from "../../content/builds.json";
+import gamesData from "../../content/games.json";
+import guiasData from "../../content/guias.json";
+import linksData from "../../content/links.json";
+import siteData from "../../content/site.json";
 import { createClient } from "./supabase/server";
 
 const contentDir = path.join(process.cwd(), "content");
@@ -15,16 +21,38 @@ export const collectionFiles = {
 
 export type CollectionKey = keyof typeof collectionFiles;
 
+const bundledCollections: Record<CollectionKey, unknown> = {
+  games: gamesData,
+  builds: buildsData,
+  guias: guiasData,
+  links: linksData,
+  site: siteData,
+};
+
 function readLocal<T>(key: CollectionKey): T {
-  return JSON.parse(fs.readFileSync(path.join(contentDir, collectionFiles[key]), "utf8")) as T;
+  try {
+    return JSON.parse(fs.readFileSync(path.join(contentDir, collectionFiles[key]), "utf8")) as T;
+  } catch {
+    return structuredClone(bundledCollections[key]) as T;
+  }
 }
 
 const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
-  const supabase = await createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
-    if (!error && data && data.data) return data.data;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (url && anonKey) {
+    try {
+      const supabase = createSupabaseClient(url, anonKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
+      if (!error && data && data.data) return data.data;
+    } catch {
+      // Fallback para o conteúdo local/embutido se o Supabase falhar.
+    }
   }
+
   return readLocal<unknown>(key);
 });
 

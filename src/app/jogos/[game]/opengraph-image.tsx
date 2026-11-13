@@ -1,18 +1,11 @@
-import fs from "node:fs";
-import path from "node:path";
 import { ImageResponse } from "next/og";
 import { getGame, getSite } from "@/lib/content";
+import { getAvatarDataUrl } from "@/lib/og";
 
 export const runtime = "nodejs";
 export const alt = "MalakaTV — Guias e builds";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-function getAvatarDataUrl(): string {
-  const filePath = path.join(process.cwd(), "public", "images", "malaka-profile.jpg");
-  const buffer = fs.readFileSync(filePath);
-  return `data:image/jpeg;base64,${buffer.toString("base64")}`;
-}
 
 export default async function GameOpenGraphImage({
   params,
@@ -20,8 +13,7 @@ export default async function GameOpenGraphImage({
   params: Promise<{ game: string }>;
 }) {
   const { game: slug } = await params;
-  const [site, game] = await Promise.all([getSite(), getGame(slug)]);
-  const avatarSrc = getAvatarDataUrl();
+  const [site, game, avatarSrc] = await Promise.all([getSite(), getGame(slug), getAvatarDataUrl()]);
 
   const isActive = game?.status === "ativo";
   const badgeText = game
@@ -82,21 +74,41 @@ export default async function GameOpenGraphImage({
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "42px" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={avatarSrc}
-            alt=""
-            width={176}
-            height={176}
-            style={{
-              width: "176px",
-              height: "176px",
-              borderRadius: "999px",
-              objectFit: "cover",
-              border: "6px solid #9fe870",
-              flexShrink: 0,
-            }}
-          />
+          {avatarSrc ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={avatarSrc}
+              alt=""
+              width={176}
+              height={176}
+              style={{
+                width: "176px",
+                height: "176px",
+                borderRadius: "999px",
+                objectFit: "cover",
+                border: "6px solid #9fe870",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "176px",
+                height: "176px",
+                borderRadius: "999px",
+                backgroundColor: "#9fe870",
+                color: "#0e0f0c",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "76px",
+                fontWeight: 800,
+                flexShrink: 0,
+              }}
+            >
+              M
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: "14px", maxWidth: "820px" }}>
             <div
               style={{

@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!guide || guide.kind !== "farm") return { title: "Farm não encontrado" };
   const game = (await getGame(guide.game)) ?? (await getGame(gameSlug));
   const description = guide.note || `Setup de farm ${guide.title} — guia de ${game?.name ?? "ARPG"}.`;
-  const atlasThumb = `/api/atlas/thumb${guide.atlasUrl ? `?url=${encodeURIComponent(guide.atlasUrl)}` : ""}`;
-  const thumb = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : atlasThumb);
+  const ogAtlasThumb = `/api/atlas/thumb?format=png${guide.atlasUrl ? `&url=${encodeURIComponent(guide.atlasUrl)}` : ""}`;
+  const thumb = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : ogAtlasThumb);
 
   return {
     title: guide.title,

@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const game = (await getGame(build.game)) ?? (await getGame(gameSlug));
   const description = build.note || `Build ${build.name} — guia de ${game?.name ?? "ARPG"}.`;
   const thumb = build.image || (build.videoId ? youtubeThumb(build.videoId) : undefined);
+  const ogImage = thumb || `/jogos/${build.game}/opengraph-image`;
 
   return {
     title: build.name,
@@ -32,11 +33,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       description,
       type: "article",
       url: `/jogos/${build.game}/builds/${build.slug}`,
-      images: thumb ? [thumb] : undefined,
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
-      images: thumb ? [thumb] : undefined,
+      images: [ogImage],
     },
   };
 }
