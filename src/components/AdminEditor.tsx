@@ -452,79 +452,78 @@ function useAtlasResolution(rawUrl: string): AtlasCheckState {
   return { status: "external" };
 }
 
-function AtlasUrlField({
+function AtlasField({
   value,
+  atlasImage,
   placeholder,
-  onChange,
+  onChangeUrl,
+  onChangeImage,
 }: {
   value: string;
+  atlasImage: string;
   placeholder?: string;
-  onChange: (value: string) => void;
+  onChangeUrl: (value: string) => void;
+  onChangeImage: (value: string) => void;
 }) {
   const resolution = useAtlasResolution(value);
+  const [showUpload, setShowUpload] = useState(false);
+  const uploadVisible = showUpload || Boolean(atlasImage);
 
   return (
     <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-body">Tree do Atlas</span>
+        {resolution.status !== "valid" ? (
+          <button
+            type="button"
+            onClick={() => setShowUpload((prev) => !prev)}
+            className="text-xs font-semibold text-mute transition-colors hover:text-ink"
+          >
+            {uploadVisible && !atlasImage ? "Usar só link" : "ou enviar print"}
+          </button>
+        ) : null}
+      </div>
+
       <input
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => onChangeUrl(event.target.value)}
         placeholder={placeholder}
         className={inputClass}
       />
+
       {resolution.status === "loading" ? (
-        <p className="rounded-xl border border-ink/10 bg-canvas px-3.5 py-2.5 text-xs text-body">
-          Lendo os pontos do link do PoE Planner…
-        </p>
+        <p className="text-xs text-mute">Lendo link da Atlas Tree…</p>
       ) : null}
+
       {resolution.status === "valid" ? (
-        <div className="rounded-xl border border-positive-deep/25 bg-primary-pale/70 px-3.5 py-2.5 text-xs leading-relaxed text-positive-deep">
-          <p className="font-semibold">
-            ✓ Tree interativa pronta ({resolution.count} pontos detectados)
-          </p>
-          <p className="mt-0.5">
-            O site já vai exibir o Atlas interativo com zoom sem perder qualidade e descrição nos nodes. Não precisa enviar print da foto do Atlas!
-          </p>
+        <div className="flex items-center gap-3 rounded-xl border border-positive-deep/20 bg-primary-pale/55 p-2 text-xs text-positive-deep">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/api/atlas/thumb?url=${encodeURIComponent(value.trim())}`}
+            alt=""
+            className="h-12 w-20 shrink-0 rounded-lg border border-ink/10 bg-[#141414] object-cover"
+          />
+          <div className="min-w-0">
+            <p className="font-semibold">
+              ✓ {resolution.count} pontos · Tree interativa e capa geradas automaticamente
+            </p>
+          </div>
         </div>
       ) : null}
+
       {resolution.status === "external" ? (
-        <p className="rounded-xl border border-warning/40 bg-warning/10 px-3.5 py-2.5 text-xs leading-relaxed text-ink">
-          Esse link vai aparecer no botão &ldquo;Abrir Atlas&rdquo;, mas não tem o código da tree para desenhar o board. Para gerar o Atlas interativo, cole o link completo (PoEDB / PoE Planner / Path of Exile).
+        <p className="text-xs text-mute">
+          Link salvo no botão &ldquo;Abrir Atlas&rdquo;. Para gerar o board automático, cole o link completo (PoEDB / PoE Planner / Path of Exile).
         </p>
+      ) : null}
+
+      {uploadVisible ? (
+        <div className="rounded-xl border border-ink/10 bg-canvas/70 p-3">
+          <ImageField value={atlasImage} onChange={onChangeImage} />
+        </div>
       ) : null}
     </div>
   );
-}
-
-function AtlasImageField({
-  value,
-  atlasUrl,
-  onChange,
-}: {
-  value: string;
-  atlasUrl: string;
-  onChange: (value: string) => void;
-}) {
-  const resolution = useAtlasResolution(atlasUrl);
-  const [forceUpload, setForceUpload] = useState(false);
-
-  if (resolution.status === "valid" && !value && !forceUpload) {
-    return (
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-ink/10 bg-canvas px-3.5 py-3 text-xs text-body">
-        <span>
-          Você já colou o link da Atlas Tree acima — a árvore interativa será mostrada automaticamente com qualidade máxima. Não é necessário subir print.
-        </span>
-        <button
-          type="button"
-          onClick={() => setForceUpload(true)}
-          className="shrink-0 font-semibold text-ink underline-offset-4 hover:underline"
-        >
-          Enviar print mesmo assim
-        </button>
-      </div>
-    );
-  }
-
-  return <ImageField value={value} onChange={onChange} />;
 }
 
 function FieldInput({
@@ -532,11 +531,13 @@ function FieldInput({
   value,
   row,
   onChange,
+  onPatch,
 }: {
   field: Field;
   value: unknown;
   row?: Row;
   onChange: (value: unknown) => void;
+  onPatch?: (patch: Row) => void;
 }) {
   if (field.type === "textarea") {
     return (
@@ -664,15 +665,7 @@ function FieldInput({
     return (
       <div>
         <Label>{field.label}</Label>
-        {field.key === "atlasImage" ? (
-          <AtlasImageField
-            value={String(value ?? "")}
-            atlasUrl={String(row?.atlasUrl ?? "")}
-            onChange={onChange}
-          />
-        ) : (
-          <ImageField value={String(value ?? "")} onChange={onChange} />
-        )}
+        <ImageField value={String(value ?? "")} onChange={onChange} />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
     );
@@ -703,11 +696,12 @@ function FieldInput({
   if (field.key === "atlasUrl") {
     return (
       <div>
-        <Label>{field.label}</Label>
-        <AtlasUrlField
+        <AtlasField
           value={String(value ?? "")}
+          atlasImage={String(row?.atlasImage ?? "")}
           placeholder={field.placeholder}
-          onChange={onChange}
+          onChangeUrl={(nextUrl) => onChange(nextUrl)}
+          onChangeImage={(nextImage) => onPatch?.({ atlasImage: nextImage })}
         />
         {field.hint ? <Hint>{field.hint}</Hint> : null}
       </div>
@@ -1032,7 +1026,7 @@ export default function AdminEditor({
 
           <div className="card-soft p-5">
             {collection && editing !== null && rows[editing] ? (
-              <div className="grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {primaryFields.map((field) => {
                   const resolvedField =
                     field.key === "game" && field.type === "select"
@@ -1046,19 +1040,27 @@ export default function AdminEditor({
                           ),
                         }
                       : field;
+                  const isHalf =
+                    collection.key === "guias" &&
+                    (field.key === "game" ||
+                      field.key === "kind" ||
+                      field.key === "title" ||
+                      field.key === "metric");
                   return (
-                    <FieldInput
-                      key={`${editing}-${field.key}`}
-                      field={resolvedField}
-                      value={rows[editing][field.key]}
-                      row={rows[editing]}
-                      onChange={(value) => updateRow(editing, { [field.key]: value })}
-                    />
+                    <div key={`${editing}-${field.key}`} className={isHalf ? "" : "sm:col-span-2"}>
+                      <FieldInput
+                        field={resolvedField}
+                        value={rows[editing][field.key]}
+                        row={rows[editing]}
+                        onChange={(value) => updateRow(editing, { [field.key]: value })}
+                        onPatch={(patch) => updateRow(editing, patch)}
+                      />
+                    </div>
                   );
                 })}
 
                 {advancedFields.length > 0 ? (
-                  <details className="rounded-2xl border border-ink/10 bg-canvas/60 p-4">
+                  <details className="rounded-2xl border border-ink/10 bg-canvas/60 p-4 sm:col-span-2">
                     <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-body">
                       <span>Mais opções (opcional)</span>
                       <ChevronDown className="h-4 w-4 text-mute" aria-hidden="true" />
@@ -1071,6 +1073,7 @@ export default function AdminEditor({
                           value={rows[editing][field.key]}
                           row={rows[editing]}
                           onChange={(value) => updateRow(editing, { [field.key]: value })}
+                          onPatch={(patch) => updateRow(editing, patch)}
                         />
                       ))}
                     </div>

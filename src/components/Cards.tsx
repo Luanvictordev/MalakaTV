@@ -124,6 +124,15 @@ export function BuildCard({ build }: { build: Build }) {
   );
 }
 
+function getGuideCover(guide: Guide): string | undefined {
+  if (guide.image) return guide.image;
+  if (guide.atlasImage) return guide.atlasImage;
+  if (!guide.videoId && guide.kind === "farm") {
+    return `/api/atlas/thumb${guide.atlasUrl ? `?url=${encodeURIComponent(guide.atlasUrl)}` : ""}`;
+  }
+  return undefined;
+}
+
 export function GuideCard({ guide, large = false }: { guide: Guide; large?: boolean }) {
   const isFarm = guide.kind === "farm";
   const content = (
@@ -131,7 +140,7 @@ export function GuideCard({ guide, large = false }: { guide: Guide; large?: bool
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-canvas-soft">
         <VideoThumb
           videoId={guide.videoId}
-          image={guide.image || guide.atlasImage || undefined}
+          image={getGuideCover(guide)}
           alt={guide.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
@@ -191,7 +200,7 @@ export function FarmRow({ guide }: { guide: Guide }) {
       <div className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-xl bg-canvas-soft sm:w-32">
         <VideoThumb
           videoId={guide.videoId}
-          image={guide.image || guide.atlasImage || undefined}
+          image={getGuideCover(guide)}
           alt={guide.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />

@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!guide || guide.kind !== "farm") return { title: "Farm não encontrado" };
   const game = (await getGame(guide.game)) ?? (await getGame(gameSlug));
   const description = guide.note || `Setup de farm ${guide.title} — guia de ${game?.name ?? "ARPG"}.`;
-  const thumb = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : undefined);
+  const atlasThumb = `/api/atlas/thumb${guide.atlasUrl ? `?url=${encodeURIComponent(guide.atlasUrl)}` : ""}`;
+  const thumb = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : atlasThumb);
 
   return {
     title: guide.title,
@@ -56,7 +57,8 @@ export default async function FarmPage({ params }: Params) {
     .slice(0, 4);
 
   const pageUrl = `${SITE_URL}/jogos/${guide.game}/farms/${guide.slug}`;
-  const thumbUrl = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : undefined);
+  const atlasThumb = `/api/atlas/thumb${guide.atlasUrl ? `?url=${encodeURIComponent(guide.atlasUrl)}` : ""}`;
+  const thumbUrl = guide.atlasImage || guide.image || (guide.videoId ? youtubeThumb(guide.videoId) : atlasThumb);
   const setupImages = (guide.setupImages ?? []).filter(Boolean);
   const decodedAtlas = guide.atlasUrl ? await resolveAtlasTreeUrl(guide.atlasUrl) : null;
 
