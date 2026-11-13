@@ -1,4 +1,15 @@
-export type FieldType = "text" | "textarea" | "tags" | "pills" | "bool" | "image" | "images" | "spotlight" | "select" | "youtube" | "ascendancy";
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "tags"
+  | "pills"
+  | "bool"
+  | "image"
+  | "images"
+  | "spotlight"
+  | "select"
+  | "youtube"
+  | "ascendancy";
 
 export type Field = {
   key: string;
@@ -7,6 +18,9 @@ export type Field = {
   placeholder?: string;
   hint?: string;
   options?: string[];
+  optionLabels?: Record<string, string>;
+  half?: boolean;
+  group?: string;
   advanced?: boolean;
   onlyWhenKind?: "farm" | "guia";
 };
@@ -26,71 +40,42 @@ const gameOptions = ["poe1", "poe2", "hero-siege"];
 
 export const collections: CollectionDef[] = [
   {
-    key: "games",
-    label: "Jogos",
-    titleKey: "name",
-    subtitleKey: "status",
-    fields: [
-      { key: "name", label: "Nome", type: "text", placeholder: "Path of Exile 2" },
-      { key: "shortName", label: "Nome curto", type: "text", placeholder: "PoE 2" },
-      { key: "slug", label: "Slug", type: "text", placeholder: "poe2", hint: "poe1, poe2, hero-siege. É o que liga builds e guias ao jogo.", advanced: true },
-      { key: "status", label: "Status", type: "select", options: ["ativo", "em-breve"], hint: "em-breve deixa a seção desativada no site." },
-      { key: "releaseLabel", label: "Etiqueta de lançamento", type: "text", placeholder: "Free-to-play em 11 de dezembro" },
-      { key: "releaseDate", label: "Data curta", type: "text", placeholder: "dezembro", advanced: true },
-      { key: "description", label: "Descrição", type: "textarea" },
-      { key: "cover", label: "Capa (opcional)", type: "image", advanced: true },
-    ],
-    create: () => ({
-      slug: "",
-      name: "",
-      shortName: "",
-      status: "em-breve",
-      releaseLabel: "",
-      releaseDate: "",
-      description: "",
-      cover: "",
-    }),
-  },
-  {
     key: "builds",
     label: "Builds",
     titleKey: "name",
     subtitleKey: "className",
     fields: [
-      { key: "game", label: "Jogo", type: "select", options: gameOptions },
+      { key: "game", label: "Jogo", type: "select", options: gameOptions, half: true },
+      { key: "className", label: "Classe / Ascendancy", type: "ascendancy", placeholder: "Trickster", half: true },
       { key: "name", label: "Nome da build", type: "text", placeholder: "Frost Blades Trickster" },
-      { key: "videoId", label: "Vídeo do YouTube", type: "youtube", placeholder: "Cole o link do YouTube ou o ID" },
-      { key: "className", label: "Classe / ascendancy", type: "ascendancy", placeholder: "Trickster" },
-      { key: "pobUrl", label: "Link do PoB (opcional)", type: "text", placeholder: "https://pobb.in/…" },
+      { key: "videoId", label: "Vídeo do YouTube", type: "youtube", placeholder: "Cole o link do YouTube ou ID", half: true },
+      { key: "pobUrl", label: "Link do PoB (opcional)", type: "text", placeholder: "https://pobb.in/…", half: true },
+      { key: "note", label: "Resumo / comentário da build", type: "textarea" },
       { key: "tags", label: "Tags", type: "tags" },
-      { key: "note", label: "Comentário", type: "textarea" },
-      { key: "featured", label: "Destacar na home", type: "bool" },
+      { key: "featured", label: "Destacar na capa da Home", type: "bool" },
       {
         key: "budget",
-        label: "Investimento (opcional)",
+        label: "Custo / Investimento",
         type: "pills",
         options: ["Zero / SSF", "Barato", "Médio", "High Budget"],
-        hint: "Clique para marcar ou desmarcar. Ajuda o usuário a filtrar.",
         advanced: true,
       },
       {
         key: "focus",
-        label: "Foco da build (opcional)",
+        label: "Foco da build",
         type: "pills",
         options: ["Mapper", "Bosser", "All-rounder", "Sanctum / Trial"],
         advanced: true,
       },
       {
         key: "playstyle",
-        label: "Estilo / botões (opcional)",
+        label: "Estilo de jogo",
         type: "pills",
         options: ["1 botão / Chill", "Médio", "Muitos botões"],
         advanced: true,
       },
-      { key: "tier", label: "Tier (opcional)", type: "text", placeholder: "S+", advanced: true },
-      { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
-      { key: "image", label: "Foto customizada (opcional)", type: "image", hint: "Se vazio, usa a thumb do vídeo.", advanced: true },
-      { key: "slug", label: "Link da página (slug)", type: "text", hint: "Gerado automaticamente pelo nome.", advanced: true },
+      { key: "tier", label: "Tier no card (ex: S+)", type: "text", placeholder: "S+", advanced: true },
+      { key: "image", label: "Capa customizada (opcional)", type: "image", hint: "Se vazio, usa a thumb do YouTube.", advanced: true },
     ],
     create: () => ({
       game: "poe1",
@@ -116,22 +101,29 @@ export const collections: CollectionDef[] = [
     titleKey: "title",
     subtitleKey: "kind",
     fields: [
-      { key: "game", label: "Jogo", type: "select", options: gameOptions },
-      { key: "kind", label: "Tipo", type: "select", options: ["guia", "farm"] },
-      { key: "title", label: "Título", type: "text", placeholder: "Guia dos Atos para novatos" },
-      { key: "metric", label: "Etiqueta", type: "text", placeholder: "20 div/h ou Leveling" },
+      { key: "game", label: "Jogo", type: "select", options: gameOptions, half: true },
       {
-        key: "videoId",
-        label: "Vídeo do YouTube (opcional)",
-        type: "youtube",
-        placeholder: "Cole o link do YouTube ou deixe vazio",
+        key: "kind",
+        label: "Tipo de conteúdo",
+        type: "select",
+        options: ["guia", "farm"],
+        optionLabels: { guia: "Guia", farm: "Farm" },
+        half: true,
       },
+      { key: "title", label: "Título", type: "text", placeholder: "Guia dos Atos para novatos", half: true },
+      { key: "metric", label: "Destaque no card (opcional)", type: "text", placeholder: "20 div/h ou Leveling", half: true },
       {
         key: "atlasUrl",
         label: "Tree do Atlas",
         type: "text",
         placeholder: "Cole o link do PoEDB, PoE Planner ou site oficial…",
         onlyWhenKind: "farm",
+      },
+      {
+        key: "videoId",
+        label: "Vídeo do YouTube (opcional)",
+        type: "youtube",
+        placeholder: "Cole o link do YouTube ou deixe vazio",
       },
       { key: "note", label: "Resumo curto", type: "textarea" },
       {
@@ -164,7 +156,7 @@ export const collections: CollectionDef[] = [
       },
       {
         key: "investment",
-        label: "Investimento inicial (opcional)",
+        label: "Investimento inicial",
         type: "pills",
         options: ["Zero (Alch & Go)", "Baixo", "Médio", "Alto"],
         onlyWhenKind: "farm",
@@ -172,7 +164,7 @@ export const collections: CollectionDef[] = [
       },
       {
         key: "buildReq",
-        label: "Exigência da build (opcional)",
+        label: "Exigência da build",
         type: "pills",
         options: ["Qualquer build", "Clear rápido", "Single target forte", "Tank"],
         onlyWhenKind: "farm",
@@ -180,14 +172,12 @@ export const collections: CollectionDef[] = [
       },
       {
         key: "mapHint",
-        label: "Mapa / Waystone recomendado (opcional)",
+        label: "Mapa recomendado",
         type: "text",
         placeholder: "Ex: Jungle Valley / Dunes ou T15+",
         onlyWhenKind: "farm",
         advanced: true,
       },
-      { key: "videoTitle", label: "Título do vídeo (opcional)", type: "text", advanced: true },
-      { key: "slug", label: "Link (slug)", type: "text", hint: "Gerado automaticamente pelo título.", advanced: true },
     ],
     create: () => ({
       game: "poe1",
@@ -211,70 +201,99 @@ export const collections: CollectionDef[] = [
     }),
   },
   {
+    key: "games",
+    label: "Jogos",
+    titleKey: "name",
+    subtitleKey: "status",
+    fields: [
+      { key: "name", label: "Nome do jogo", type: "text", placeholder: "Path of Exile 2", half: true },
+      { key: "shortName", label: "Nome curto (menu)", type: "text", placeholder: "PoE 2", half: true },
+      {
+        key: "status",
+        label: "Status no site",
+        type: "select",
+        options: ["ativo", "em-breve"],
+        optionLabels: { ativo: "Ativo no site", "em-breve": "Em breve" },
+        half: true,
+      },
+      {
+        key: "releaseLabel",
+        label: "Selo da temporada / aviso",
+        type: "text",
+        placeholder: "Ex: Liga 3.30 · Covens of Umbra",
+        half: true,
+      },
+      { key: "description", label: "Descrição curta da página do jogo", type: "textarea" },
+      { key: "releaseDate", label: "Data curta ao lado do selo (opcional)", type: "text", placeholder: "13 de novembro", advanced: true },
+      { key: "cover", label: "Banner customizado (opcional)", type: "image", advanced: true },
+    ],
+    create: () => ({
+      slug: "",
+      name: "",
+      shortName: "",
+      status: "em-breve",
+      releaseLabel: "",
+      releaseDate: "",
+      description: "",
+      cover: "",
+    }),
+  },
+  {
     key: "links",
     label: "Ferramentas",
     titleKey: "name",
     subtitleKey: "category",
     fields: [
-      { key: "name", label: "Nome do site", type: "text", placeholder: "Awakened PoE Trade" },
-      { key: "url", label: "Link", type: "text", placeholder: "https://…" },
+      { key: "name", label: "Nome da ferramenta", type: "text", placeholder: "Awakened PoE Trade", half: true },
+      { key: "url", label: "Link do site", type: "text", placeholder: "https://…", half: true },
       {
-        key: "logo",
-        label: "Logo (opcional)",
-        type: "image",
-        hint: "Já vem o favicon do site. Suba uma imagem só se quiser trocar.",
+        key: "category",
+        label: "Categoria",
+        type: "pills",
+        options: ["Comércio e economia", "Leveling e árvore", "Overlays e ferramentas", "Filtros", "Builds", "Comunidade"],
       },
-      { key: "category", label: "Categoria", type: "text", placeholder: "Comércio e economia" },
       {
         key: "game",
-        label: "Jogo (opcional)",
+        label: "Compatível com",
         type: "pills",
         options: ["Ambos", "PoE 1", "PoE 2"],
-        hint: "Se deixar vazio, aparece como compatível com ambos.",
+        half: true,
       },
-      { key: "description", label: "O que é / pra que serve", type: "textarea" },
+      { key: "featured", label: "Destacar na Home", type: "bool", half: true },
+      { key: "description", label: "Para que serve (resumo curto)", type: "textarea" },
+      {
+        key: "logo",
+        label: "Logo customizada (opcional)",
+        type: "image",
+        hint: "Por padrão já puxa o ícone oficial do site.",
+        advanced: true,
+      },
       {
         key: "logoInvert",
-        label: "Inverter logo (logo escura)",
+        label: "Inverter cor da logo (para logos pretas)",
         type: "bool",
-        hint: "Marque quando a logo for preta e sumir no fundo escuro.",
+        advanced: true,
       },
-      { key: "featured", label: "Destacar na home", type: "bool", hint: "Se nenhuma ferramenta for marcada, a home mostra as 6 padrão." },
     ],
     create: () => ({ name: "", url: "", category: "", game: "", description: "", logo: "", logoInvert: false, featured: false }),
   },
 ];
 
 export const siteFields: Field[] = [
-  { key: "name", label: "Nome do canal", type: "text" },
-  { key: "tagline", label: "Subtítulo", type: "text" },
-  { key: "handle", label: "Arroba do canal", type: "text", placeholder: "@MalakaTV" },
-  { key: "youtube", label: "Link do YouTube", type: "text" },
-  { key: "discord", label: "Link do Discord", type: "text", placeholder: "https://discord.gg/…" },
-  { key: "twitch", label: "Link da Twitch", type: "text", placeholder: "https://www.twitch.tv/…" },
-  { key: "instagram", label: "Link do Instagram", type: "text", placeholder: "https://www.instagram.com/…" },
-  { key: "facebook", label: "Link do Facebook", type: "text", placeholder: "https://www.facebook.com/…" },
-  { key: "kick", label: "Link da Kick", type: "text", placeholder: "https://kick.com/…" },
-  { key: "bio", label: "Sobre o canal", type: "textarea" },
-  { key: "description", label: "Descrição (SEO)", type: "textarea" },
-  { key: "heroTitle", label: "Título da home", type: "text" },
-  { key: "heroText", label: "Texto da home", type: "textarea" },
-  { key: "leaguePatch", label: "Patch da liga", type: "text", placeholder: "3.30" },
-  { key: "leagueName", label: "Nome da liga", type: "text", placeholder: "Covens of Umbra" },
-  { key: "leagueDate", label: "Data da liga", type: "text", placeholder: "13 de novembro" },
-  { key: "leagueUrl", label: "Link da liga", type: "text", placeholder: "https://www.pathofexile.com/covens" },
-  { key: "leagueImage", label: "Capa da liga (opcional)", type: "image", hint: "Se vazio, a capa é a arte da umbra desenhada no site." },
-  { key: "spotlights", label: "Destaques da liga", type: "spotlight", hint: "Um por linha: título | link | descrição" },
-  { key: "buildsEyebrow", label: "Seção Builds — etiqueta", type: "text", placeholder: "Padrão: etiqueta de lançamento do jogo" },
-  { key: "buildsTitle", label: "Seção Builds — título", type: "text", placeholder: "Builds em destaque" },
-  { key: "buildsDescription", label: "Seção Builds — descrição", type: "textarea", placeholder: "As que o Malaka indicou primeiro, com vídeo completo e resumo direto." },
-  { key: "guidesEyebrow", label: "Seção Guias — etiqueta", type: "text", placeholder: "Comece por aqui" },
-  { key: "guidesTitle", label: "Seção Guias — título", type: "text", placeholder: "Guias pra começar bem" },
-  { key: "guidesDescription", label: "Seção Guias — descrição", type: "textarea", placeholder: "Os guias essenciais pra começar bem." },
-  { key: "farmsEyebrow", label: "Seção Farms — etiqueta", type: "text", placeholder: "Economia" },
-  { key: "farmsTitle", label: "Seção Farms — título", type: "text", placeholder: "FARMs que pagam" },
-  { key: "farmsDescription", label: "Seção Farms — descrição", type: "textarea", placeholder: "Farms seguros e rentáveis pra evoluir rápido." },
-  { key: "toolsEyebrow", label: "Seção Ferramentas — etiqueta", type: "text", placeholder: "Ferramentas" },
-  { key: "toolsTitle", label: "Seção Ferramentas — título", type: "text", placeholder: "O que ele usa, explicado" },
-  { key: "toolsDescription", label: "Seção Ferramentas — descrição", type: "textarea", placeholder: "Planners, filtros, overlays e comunidade — cada site explicado e com link direto." },
+  { key: "leaguePatch", label: "Patch", type: "text", placeholder: "3.30", half: true, group: "Liga em destaque (Banner da Home)" },
+  { key: "leagueName", label: "Nome da liga", type: "text", placeholder: "Covens of Umbra", half: true, group: "Liga em destaque (Banner da Home)" },
+  { key: "leagueDate", label: "Data / lançamento", type: "text", placeholder: "13 de novembro", half: true, group: "Liga em destaque (Banner da Home)" },
+  { key: "leagueImage", label: "Arte da liga (opcional)", type: "image", hint: "Se vazio, usa a arte padrão desenhada no site.", group: "Liga em destaque (Banner da Home)" },
+
+  { key: "heroTitle", label: "Título principal da Home", type: "text", group: "Boas-vindas & Atalhos da Home" },
+  { key: "heroText", label: "Subtítulo da Home", type: "textarea", group: "Boas-vindas & Atalhos da Home" },
+  { key: "spotlights", label: "Links rápidos da liga (Patch notes, Árvore, Atlas)", type: "spotlight", group: "Boas-vindas & Atalhos da Home" },
+
+  { key: "youtube", label: "YouTube", type: "text", half: true, group: "Canal & Redes Sociais" },
+  { key: "discord", label: "Discord", type: "text", placeholder: "https://discord.gg/…", half: true, group: "Canal & Redes Sociais" },
+  { key: "twitch", label: "Twitch", type: "text", placeholder: "https://www.twitch.tv/…", half: true, group: "Canal & Redes Sociais" },
+  { key: "kick", label: "Kick", type: "text", placeholder: "https://kick.com/…", half: true, group: "Canal & Redes Sociais" },
+  { key: "instagram", label: "Instagram", type: "text", placeholder: "https://www.instagram.com/…", half: true, group: "Canal & Redes Sociais" },
+  { key: "facebook", label: "Facebook", type: "text", placeholder: "https://www.facebook.com/…", half: true, group: "Canal & Redes Sociais" },
+  { key: "bio", label: "Frase sobre o canal (rodapé)", type: "textarea", group: "Canal & Redes Sociais" },
 ];

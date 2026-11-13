@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import AdminEditor from "@/components/AdminEditor";
 import { getBuilds, getGames, getGuides, getLinks, getSite } from "@/lib/content";
-import { getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { signOut } from "@/app/login/actions";
 
 export const metadata: Metadata = {
-  title: "Editor de conteúdo",
+  title: "Painel do Malaka",
   robots: { index: false, follow: false },
 };
 
@@ -13,7 +13,6 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
-  const configured = supabaseConfigured();
 
   const [games, builds, guias, links, site] = await Promise.all([
     getGames(),
@@ -25,16 +24,14 @@ export default async function AdminPage() {
 
   return (
     <div className="bg-canvas">
-      <div className="mx-auto max-w-[1200px] px-5 py-12">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mx-auto max-w-[1200px] px-5 py-10">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="eyebrow">Área do Malaka</p>
-            <h1 className="mt-3 font-display text-[clamp(2rem,4.5vw,3rem)] font-extrabold leading-[1] tracking-[-0.03em] text-ink">
-              Editor de conteúdo
+            <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-extrabold leading-tight tracking-[-0.03em] text-ink">
+              Painel do Malaka
             </h1>
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-body">
-              Adicione builds, guias, farms, jogos e ferramentas, troque textos e suba fotos. O que você
-              salvar aparece no site na hora.
+            <p className="mt-1 text-sm text-body">
+              Gerencie builds, farms, guias, jogos, ferramentas e textos da home em um só lugar.
             </p>
           </div>
 
@@ -50,12 +47,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        <p className="mt-4 inline-flex flex-wrap items-center gap-2 text-xs font-medium text-mute">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          Armazenamento: {configured ? "Supabase (conteúdo no banco, imagens no Storage)" : "arquivos locais do projeto"}
-        </p>
-
-        <div className="mt-8">
+        <div className="mt-6">
           <AdminEditor
             initial={{
               games: games as unknown as Record<string, unknown>[],
@@ -65,28 +57,6 @@ export default async function AdminPage() {
               site: site as unknown as Record<string, unknown>,
             }}
           />
-        </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <div className="card-soft p-5">
-            <p className="font-display text-base font-extrabold text-ink">Ligar um jogo</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-body">
-              Em <strong className="text-ink">Jogos</strong>, mude o status de <code>em-breve</code> pra{" "}
-              <code>ativo</code> e a seção abre no site.
-            </p>
-          </div>
-          <div className="card-soft p-5">
-            <p className="font-display text-base font-extrabold text-ink">Thumb automática</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-body">
-              Só o ID do vídeo já traz a capa do YouTube. Só suba foto pra trocar a capa.
-            </p>
-          </div>
-          <div className="card-soft p-5">
-            <p className="font-display text-base font-extrabold text-ink">Não mude o link depois</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-body">
-              O link da página é criado sozinho pelo nome. Se alterar depois de publicar, quem já salvou o endereço antigo não consegue mais abrir.
-            </p>
-          </div>
         </div>
       </div>
     </div>

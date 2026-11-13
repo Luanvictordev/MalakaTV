@@ -352,16 +352,14 @@ function YoutubeField({
   );
 }
 
-function formatSpotlights(rows: { label?: string; url?: string; description?: string }[]): string {
-  return rows.map((row) => [row.label, row.url, row.description].join(" | ")).join("\n");
-}
+type SpotlightRow = { label: string; url: string; description: string };
 
-function parseSpotlights(raw: string) {
-  return raw
-    .split("\n")
-    .map((line) => line.split("|").map((part) => part.trim()))
-    .filter((parts) => parts[0])
-    .map((parts) => ({ label: parts[0] ?? "", url: parts[1] ?? "", description: parts[2] ?? "" }));
+function normalizeSpotlight(row?: { label?: string; url?: string; description?: string }): SpotlightRow {
+  return {
+    label: row?.label ?? "",
+    url: row?.url ?? "",
+    description: row?.description ?? "",
+  };
 }
 
 function SpotlightField({
@@ -369,30 +367,66 @@ function SpotlightField({
   onChange,
 }: {
   value: { label?: string; url?: string; description?: string }[];
-  onChange: (value: { label: string; url: string; description: string }[]) => void;
+  onChange: (value: SpotlightRow[]) => void;
 }) {
-  const canonical = useMemo(() => formatSpotlights(value), [value]);
-  const [draft, setDraft] = useState(canonical);
-  const [prevCanonical, setPrevCanonical] = useState(canonical);
+  const rows = value.map(normalizeSpotlight);
 
-  if (canonical !== prevCanonical) {
-    setPrevCanonical(canonical);
-    if (formatSpotlights(parseSpotlights(draft)) !== canonical) {
-      setDraft(canonical);
-    }
-  }
+  const updateItem = (index: number, patch: Partial<SpotlightRow>) => {
+    const next = rows.map((item, i) => (i === index ? { ...item, ...patch } : item));
+    onChange(next);
+  };
+
+  const removeItem = (index: number) => {
+    onChange(rows.filter((_, i) => i !== index));
+  };
+
+  const addItem = () => {
+    onChange([...rows, { label: "", url: "", description: "" }]);
+  };
 
   return (
-    <textarea
-      value={draft}
-      rows={4}
-      onChange={(event) => {
-        const nextText = event.target.value;
-        setDraft(nextText);
-        onChange(parseSpotlights(nextText));
-      }}
-      className={inputClass}
-    />
+    <div className="space-y-2.5">
+      {rows.map((item, index) => (
+        <div key={index} className="space-y-2 rounded-xl border border-ink/10 bg-canvas p-3">
+          <div className="flex items-start gap-2">
+            <div className="grid flex-1 gap-2 sm:grid-cols-2">
+              <input
+                value={item.label}
+                onChange={(event) => updateItem(index, { label: event.target.value })}
+                placeholder="Título (ex: Patch notes 3.30)"
+                className={inputClass}
+              />
+              <input
+                value={item.url}
+                onChange={(event) => updateItem(index, { url: event.target.value })}
+                placeholder="Link (https://…)"
+                className={inputClass}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => removeItem(index)}
+              className="mt-2 p-1 text-mute transition-colors hover:text-danger"
+              aria-label="Remover link"
+              title="Remover"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <input
+            value={item.description}
+            onChange={(event) => updateItem(index, { description: event.target.value })}
+            placeholder="Descrição curta (ex: Tudo que mudou na liga, direto do fórum)"
+            className={inputClass}
+          />
+        </div>
+      ))}
+
+      <button type="button" onClick={addItem} className="btn btn-secondary btn-sm">
+        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+        Adicionar link rápido
+      </button>
+    </div>
   );
 }
 
@@ -596,8 +630,13 @@ function FieldInput({
     const checked = Boolean(value);
     return (
       <div>
+        {field.half ? (
+          <span className="mb-1.5 hidden text-xs font-semibold text-transparent sm:block" aria-hidden="true">
+            &nbsp;
+          </span>
+        ) : null}
         <label
-          className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+          className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-2.5 transition-colors ${
             checked ? "border-ink bg-primary-pale/60" : "border-ink/20 bg-canvas hover:border-ink/40"
           }`}
         >
@@ -624,7 +663,8 @@ function FieldInput({
 
   if (field.type === "pills") {
     const selected = String(value ?? "");
-    const options = field.options ?? [];
+    const baseOptions = field.options ?? [];
+    const options = selected && !baseOptions.includes(selected) ? [selected, ...baseOptions] : baseOptions;
     return (
       <div>
         <Label>{field.label}</Label>
@@ -640,7 +680,7 @@ function FieldInput({
                   active ? "bg-chrome text-primary" : "bg-canvas text-body hover:bg-primary-pale hover:text-ink"
                 }`}
               >
-                {option}
+                {field.optionLabels?.[option] ?? option}
               </button>
             );
           })}
@@ -651,7 +691,10 @@ function FieldInput({
   }
 
   if (field.type === "select") {
-    const options = (field.options ?? []).map((option) => ({ value: option, label: option }));
+    const options = (field.options ?? []).map((option) => ({
+      value: option,
+      label: field.optionLabels?.[option] ?? option,
+    }));
     return (
       <div>
         <Label>{field.label}</Label>
@@ -876,6 +919,64 @@ export default function AdminEditor({
   const primaryFields = collection ? collection.fields.filter((f) => !f.advanced && visibleFilter(f)) : [];
   const advancedFields = collection ? collection.fields.filter((f) => f.advanced && visibleFilter(f)) : [];
 
+  const siteGroups = useMemo(() => {
+    const groups: { title: string; fields: Field[] }[] = [];
+    for (const field of siteFields) {
+      const groupName = field.group || "Geral";
+      const existing = groups.find((g) => g.title === groupName);
+      if (existing) existing.fields.push(field);
+      else groups.push({ title: groupName, fields: [field] });
+    }
+    return groups;
+  }, []);
+
+  const gameOptionLabels = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const game of data.games) {
+      const slug = String(game.slug ?? "").trim();
+      const label = String(game.shortName ?? game.name ?? "").trim();
+      if (slug && label) map[slug] = label;
+    }
+    return map;
+  }, [data.games]);
+
+  const resolveField = (field: Field, row: Row): Field => {
+    if (field.key === "game" && field.type === "select") {
+      return {
+        ...field,
+        options: Array.from(
+          new Set([
+            ...data.games.map((g) => String(g.slug ?? "").trim()).filter(Boolean),
+            ...(field.options ?? []),
+          ]),
+        ),
+        optionLabels: { ...gameOptionLabels, ...field.optionLabels },
+      };
+    }
+
+    if (collection?.key === "guias" && field.key === "metric") {
+      const isFarm = String(row.kind ?? "guia") === "farm";
+      return {
+        ...field,
+        label: isFarm ? "Lucro / destaque no card (opcional)" : "Tema no card (opcional)",
+        placeholder: isFarm ? "Ex: 20 div/h ou +1 div/mapa" : "Ex: Leveling ou Atlas",
+      };
+    }
+
+    return field;
+  };
+
+  const formatSubtitle = (row: Row) => {
+    const raw = String(row[collection?.subtitleKey ?? ""] ?? "");
+    const labels: Record<string, string> = {
+      ativo: "Ativo",
+      "em-breve": "Em breve",
+      guia: "Guia",
+      farm: "Farm",
+    };
+    return labels[raw] ?? raw;
+  };
+
   return (
     <div className="pb-16">
       <div className="flex flex-wrap gap-2">
@@ -904,7 +1005,7 @@ export default function AdminEditor({
           }}
           className={tabClass(tab === "site")}
         >
-          Textos do site
+          Liga & Canal
         </button>
       </div>
 
@@ -913,17 +1014,23 @@ export default function AdminEditor({
       ) : null}
 
       {tab === "site" ? (
-        <div className="card-soft mt-5 grid gap-4 p-5 sm:grid-cols-2">
-          {siteFields.map((field) => (
-            <div
-              key={field.key}
-              className={field.type === "textarea" || field.type === "spotlight" ? "sm:col-span-2" : ""}
-            >
-              <FieldInput
-                field={field}
-                value={data.site[field.key]}
-                onChange={(value) => updateSite(field.key, value)}
-              />
+        <div className="mt-5 space-y-5">
+          {siteGroups.map((group) => (
+            <div key={group.title} className="card-soft p-5">
+              <h2 className="mb-4 font-display text-base font-extrabold tracking-tight text-ink">
+                {group.title}
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {group.fields.map((field) => (
+                  <div key={field.key} className={field.half ? "" : "sm:col-span-2"}>
+                    <FieldInput
+                      field={field}
+                      value={data.site[field.key]}
+                      onChange={(value) => updateSite(field.key, value)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -979,9 +1086,7 @@ export default function AdminEditor({
                     className="flex-1 truncate text-left text-sm font-medium text-ink"
                   >
                     {titleOf(row)}
-                    <span className="ml-2 text-[11px] text-mute">
-                      {String(row[collection?.subtitleKey ?? ""] ?? "")}
-                    </span>
+                    <span className="ml-2 text-[11px] text-mute">{formatSubtitle(row)}</span>
                   </button>
                   <button
                     type="button"
@@ -1028,28 +1133,11 @@ export default function AdminEditor({
             {collection && editing !== null && rows[editing] ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {primaryFields.map((field) => {
-                  const resolvedField =
-                    field.key === "game" && field.type === "select"
-                      ? {
-                          ...field,
-                          options: Array.from(
-                            new Set([
-                              ...data.games.map((g) => String(g.slug ?? "").trim()).filter(Boolean),
-                              ...(field.options ?? []),
-                            ]),
-                          ),
-                        }
-                      : field;
-                  const isHalf =
-                    collection.key === "guias" &&
-                    (field.key === "game" ||
-                      field.key === "kind" ||
-                      field.key === "title" ||
-                      field.key === "metric");
+                  const resolved = resolveField(field, rows[editing]);
                   return (
-                    <div key={`${editing}-${field.key}`} className={isHalf ? "" : "sm:col-span-2"}>
+                    <div key={`${editing}-${field.key}`} className={resolved.half ? "" : "sm:col-span-2"}>
                       <FieldInput
-                        field={resolvedField}
+                        field={resolved}
                         value={rows[editing][field.key]}
                         row={rows[editing]}
                         onChange={(value) => updateRow(editing, { [field.key]: value })}
@@ -1065,17 +1153,21 @@ export default function AdminEditor({
                       <span>Mais opções (opcional)</span>
                       <ChevronDown className="h-4 w-4 text-mute" aria-hidden="true" />
                     </summary>
-                    <div className="mt-4 grid gap-4">
-                      {advancedFields.map((field) => (
-                        <FieldInput
-                          key={`${editing}-${field.key}`}
-                          field={field}
-                          value={rows[editing][field.key]}
-                          row={rows[editing]}
-                          onChange={(value) => updateRow(editing, { [field.key]: value })}
-                          onPatch={(patch) => updateRow(editing, patch)}
-                        />
-                      ))}
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      {advancedFields.map((field) => {
+                        const resolved = resolveField(field, rows[editing]);
+                        return (
+                          <div key={`${editing}-${field.key}`} className={resolved.half ? "" : "sm:col-span-2"}>
+                            <FieldInput
+                              field={resolved}
+                              value={rows[editing][field.key]}
+                              row={rows[editing]}
+                              onChange={(value) => updateRow(editing, { [field.key]: value })}
+                              onPatch={(patch) => updateRow(editing, patch)}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   </details>
                 ) : null}

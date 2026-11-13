@@ -43,11 +43,18 @@ export async function POST(request: Request) {
 
   let payload = body.data;
   if (collection === "games" || collection === "builds" || collection === "guias") {
+    const usedSlugs = new Set<string>();
     payload = (body.data as Record<string, unknown>[]).map((item, index) => {
       const existing = typeof item.slug === "string" ? item.slug.trim() : "";
-      if (existing) return item;
       const source = String(item.name ?? item.title ?? "");
-      return { ...item, slug: slugify(source) || `${collection}-${index + 1}` };
+      const base = existing || slugify(source) || `${collection}-${index + 1}`;
+      let unique = base;
+      let suffix = 2;
+      while (usedSlugs.has(unique)) {
+        unique = `${base}-${suffix++}`;
+      }
+      usedSlugs.add(unique);
+      return unique === existing ? item : { ...item, slug: unique };
     });
   }
 
