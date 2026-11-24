@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import buildsData from "../../content/builds.json";
@@ -37,20 +38,32 @@ function readLocal<T>(key: CollectionKey): T {
   }
 }
 
-const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
+async function fetchFromSupabase(key: CollectionKey): Promise<unknown | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) return null;
 
-  if (url && anonKey) {
-    try {
-      const supabase = createSupabaseClient(url, anonKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
-      const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
-      if (!error && data && data.data) return data.data;
-    } catch {
-      // Fallback para o conteúdo local/embutido se o Supabase falhar.
-    }
+  const supabase = createSupabaseClient(url, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data?.data ?? null;
+}
+
+// Cache entre requisições (invalidado pela tag "content" quando o admin salva).
+// Se o Supabase falhar, lança erro pra não guardar o fallback no cache.
+const fetchCached = unstable_cache(fetchFromSupabase, ["content"], {
+  tags: ["content"],
+  revalidate: 3600,
+});
+
+const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
+  try {
+    const remote = await fetchCached(key);
+    if (remote) return remote;
+  } catch {
+    // Fallback para o conteúdo local/embutido se o Supabase falhar.
   }
 
   return readLocal<unknown>(key);

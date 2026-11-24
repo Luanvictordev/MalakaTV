@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { slugify } from "@/lib/format";
 import { writeCollection, type CollectionKey } from "@/lib/store";
 import { getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
@@ -60,6 +60,7 @@ export async function POST(request: Request) {
 
   try {
     const storage = await writeCollection(collection, payload);
+    revalidateTag("content");
     revalidatePath("/", "layout");
     return Response.json({ ok: true, storage });
   } catch (error) {

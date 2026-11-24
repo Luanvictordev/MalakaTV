@@ -5,12 +5,16 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import YoutubeIcon from "@/components/icons/YoutubeIcon";
 import BuildsExplorer from "@/components/BuildsExplorer";
-import { FarmRow, GuideCard, SectionTitle } from "@/components/Cards";
+import { BuildCard, FarmRow, GuideCard, SectionTitle } from "@/components/Cards";
 import { getBuilds, getGame, getGames, getGuides, getSite } from "@/lib/content";
 
 type Params = { params: Promise<{ game: string }> };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return (await getGames()).map((game) => ({ game: game.slug }));
+}
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { game: slug } = await params;
@@ -116,7 +120,15 @@ export default async function GamePage({ params }: Params) {
             description="Filtre por classe, tag ou busque pela skill que você quer jogar."
           />
           <div className="mt-7">
-            <Suspense fallback={null}>
+            <Suspense
+              fallback={
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {builds.slice(0, 9).map((build) => (
+                    <BuildCard key={build.slug} build={build} />
+                  ))}
+                </div>
+              }
+            >
               <BuildsExplorer builds={builds} />
             </Suspense>
           </div>

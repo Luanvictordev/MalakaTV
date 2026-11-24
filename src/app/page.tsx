@@ -18,7 +18,7 @@ import {
 } from "@/components/Cards";
 import { getBuilds, getGames, getGuides, getLinks, getSite } from "@/lib/content";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const site = await getSite();

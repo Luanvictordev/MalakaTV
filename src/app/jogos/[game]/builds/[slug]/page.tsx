@@ -11,7 +11,11 @@ import { SITE_URL } from "@/lib/seo";
 
 type Params = { params: Promise<{ game: string; slug: string }> };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return (await getBuilds()).map((build) => ({ game: build.game, slug: build.slug }));
+}
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { game: gameSlug, slug } = await params;
