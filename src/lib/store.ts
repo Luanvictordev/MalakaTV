@@ -52,21 +52,18 @@ async function fetchFromSupabase(key: CollectionKey): Promise<unknown | null> {
 }
 
 // Cache entre requisições (invalidado pela tag "content" quando o admin salva).
-// Se o Supabase falhar, lança erro pra não guardar o fallback no cache.
+// Se a consulta ao Supabase falhar, o erro sobe (e não é guardado no cache): numa
+// regeração em segundo plano o Next mantém a página anterior no ar, em vez de
+// publicar o JSON do repositório (que pode estar desatualizado) por até 1 hora.
 const fetchCached = unstable_cache(fetchFromSupabase, ["content"], {
   tags: ["content"],
   revalidate: 3600,
 });
 
 const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
-  try {
-    const remote = await fetchCached(key);
-    if (remote) return remote;
-  } catch {
-    // Fallback para o conteúdo local/embutido se o Supabase falhar.
-  }
-
-  return readLocal<unknown>(key);
+  // Sem Supabase configurado ou sem o registro no banco, usa o conteúdo local/embutido.
+  const remote = await fetchCached(key);
+  return remote ?? readLocal<unknown>(key);
 });
 
 /**

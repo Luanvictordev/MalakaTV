@@ -331,7 +331,7 @@ export async function GET(request: Request) {
         height: 720,
         headers: {
           "Content-Type": "image/png",
-          "Cache-Control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800",
+          "Cache-Control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800",
         },
       },
     );
@@ -340,7 +340,7 @@ export async function GET(request: Request) {
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800",
+      "Cache-Control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800",
     },
   });
 }
