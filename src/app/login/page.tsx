@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LoginForm from "./LoginForm";
-import { supabaseConfigured } from "@/lib/supabase/server";
+import { authConfigured } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -14,7 +14,7 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
-  const configured = supabaseConfigured();
+  const configured = authConfigured();
 
   return (
     <div className="bg-canvas-soft">
@@ -36,13 +36,12 @@ export default async function LoginPage({
             <LoginForm next={next ?? "/admin"} />
           ) : (
             <div>
-              <p className="font-display text-base font-extrabold text-ink">Supabase ainda não configurado</p>
+              <p className="font-display text-base font-extrabold text-ink">Login ainda não configurado</p>
               <p className="mt-2 text-sm leading-relaxed text-body">
-                Faltam as variáveis <code className="rounded bg-canvas-soft px-1">NEXT_PUBLIC_SUPABASE_URL</code>{" "}
-                e <code className="rounded bg-canvas-soft px-1">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>. Crie o
-                projeto no Supabase, rode o SQL de <code className="rounded bg-canvas-soft px-1">supabase/schema.sql</code>{" "}
-                e adicione as duas no arquivo <code className="rounded bg-canvas-soft px-1">.env.local</code>{" "}
-                (e no Vercel, em Settings → Environment Variables).
+                Faltam as variáveis <code className="rounded bg-canvas-soft px-1">ADMIN_PASSWORD</code> e{" "}
+                <code className="rounded bg-canvas-soft px-1">ADMIN_SESSION_SECRET</code>. Adicione as duas no
+                Netlify (Site configuration → Environment variables) ou no arquivo{" "}
+                <code className="rounded bg-canvas-soft px-1">.env.local</code>.
               </p>
             </div>
           )}

@@ -817,8 +817,8 @@ export default function AdminEditor({
       setSavedSnapshot(data);
       setDirty(false);
       setStatus(
-        json.storage === "supabase"
-          ? "Salvo no Supabase — já está no ar."
+        json.storage === "netlify"
+          ? "Salvo — já está no ar."
           : "Salvo nos arquivos locais. Faça commit pra publicar.",
       );
       router.refresh();

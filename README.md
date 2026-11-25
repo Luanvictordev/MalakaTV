@@ -16,7 +16,7 @@ Começou focado em **Path of Exile 1** e já conta com estrutura preparada para 
 - **Next.js 15** (App Router) & **React 19**
 - **TypeScript**
 - **Tailwind CSS v4** & **Lucide Icons**
-- **Supabase** (autenticação, banco de conteúdo e Storage — com fallback automático para os JSONs em `content/` em desenvolvimento local)
+- **Netlify Blobs** (conteúdo editado e imagens enviadas pelo `/admin` — com fallback automático para os JSONs em `content/` em desenvolvimento local)
 
 ## Rodando localmente
 
@@ -25,7 +25,7 @@ npm install
 npm run dev
 ```
 
-Acesse `http://localhost:3000`. Sem variáveis de ambiente do Supabase configuradas, o projeto lê e grava diretamente nos arquivos de `content/`.
+Acesse `http://localhost:3000`. Sem `ADMIN_PASSWORD` e `ADMIN_SESSION_SECRET` configuradas, o admin fica aberto só em desenvolvimento e o projeto lê e grava diretamente nos arquivos de `content/`.
 
 ---
 

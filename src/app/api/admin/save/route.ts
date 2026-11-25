@@ -1,19 +1,18 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { slugify } from "@/lib/format";
 import { writeCollection, type CollectionKey } from "@/lib/store";
-import { getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
+import { authConfigured, isAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
 const allowed: CollectionKey[] = ["games", "builds", "guias", "links", "site"];
 
 export async function POST(request: Request) {
-  if (supabaseConfigured()) {
-    const user = await getCurrentUser();
-    if (!user) return Response.json({ error: "Faça login pra salvar." }, { status: 401 });
+  if (authConfigured()) {
+    if (!(await isAdmin())) return Response.json({ error: "Faça login pra salvar." }, { status: 401 });
   } else if (process.env.NODE_ENV === "production") {
     return Response.json(
-      { error: "Configure o Supabase (NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY) pra editar no site publicado." },
+      { error: "Configure ADMIN_PASSWORD e ADMIN_SESSION_SECRET pra editar no site publicado." },
       { status: 403 },
     );
   }

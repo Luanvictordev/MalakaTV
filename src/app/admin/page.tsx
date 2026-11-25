@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AdminEditor from "@/components/AdminEditor";
 import { getBuilds, getGames, getGuides, getLinks, getSite } from "@/lib/content";
-import { getCurrentUser } from "@/lib/supabase/server";
+import { authConfigured } from "@/lib/auth";
 import { signOut } from "@/app/login/actions";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const user = await getCurrentUser();
+  const loggedIn = authConfigured();
 
   const [games, builds, guias, links, site] = await Promise.all([
     getGames(),
@@ -36,8 +36,8 @@ export default async function AdminPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="badge badge-neutral">{user?.email ?? "sessão local"}</span>
-            {user ? (
+            <span className="badge badge-neutral">{loggedIn ? "Malaka" : "sessão local"}</span>
+            {loggedIn ? (
               <form action={signOut}>
                 <button type="submit" className="btn btn-tertiary btn-sm">
                   Sair

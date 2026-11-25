@@ -1,51 +1,22 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SESSION_COOKIE, authConfigured, verifySession } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  let response = NextResponse.next({ request });
-
   const isApi = request.nextUrl.pathname.startsWith("/api/");
 
-  if (!url || !key) {
-    // Sem Supabase: em produção o admin fica fechado, no computador continua liberado.
-    if (process.env.NODE_ENV === "production") {
-      if (isApi) return NextResponse.json({ error: "Faça login pra continuar." }, { status: 401 });
-      const login = request.nextUrl.clone();
-      login.pathname = "/login";
-      return NextResponse.redirect(login);
-    }
-    return response;
+  // Sem login configurado: em produção o admin fica fechado, no computador continua liberado.
+  if (!authConfigured()) {
+    if (process.env.NODE_ENV !== "production") return NextResponse.next();
+  } else if (await verifySession(request.cookies.get(SESSION_COOKIE)?.value)) {
+    return NextResponse.next();
   }
 
-  const supabase = createServerClient(url, key, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
-      },
-    },
-  });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    if (isApi) return NextResponse.json({ error: "Faça login pra continuar." }, { status: 401 });
-    const login = request.nextUrl.clone();
-    login.pathname = "/login";
-    login.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(login);
-  }
-
-  return response;
+  if (isApi) return NextResponse.json({ error: "Faça login pra continuar." }, { status: 401 });
+  const login = request.nextUrl.clone();
+  login.pathname = "/login";
+  login.search = "";
+  login.searchParams.set("next", request.nextUrl.pathname);
+  return NextResponse.redirect(login);
 }
 
 export const config = {

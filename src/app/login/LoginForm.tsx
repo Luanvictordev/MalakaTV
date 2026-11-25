@@ -11,21 +11,6 @@ export default function LoginForm({ next }: { next: string }) {
       <input type="hidden" name="next" value={next} />
 
       <div>
-        <label htmlFor="email" className="mb-1.5 block text-xs font-semibold text-body">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="malaka@email.com"
-          className="field"
-        />
-      </div>
-
-      <div>
         <label htmlFor="password" className="mb-1.5 block text-xs font-semibold text-body">
           Senha
         </label>

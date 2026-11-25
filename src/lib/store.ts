@@ -2,13 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import buildsData from "../../content/builds.json";
 import gamesData from "../../content/games.json";
 import guiasData from "../../content/guias.json";
 import linksData from "../../content/links.json";
 import siteData from "../../content/site.json";
-import { createClient } from "./supabase/server";
+import { blobStore } from "./blobs";
 
 const contentDir = path.join(process.cwd(), "content");
 
@@ -38,55 +37,45 @@ function readLocal<T>(key: CollectionKey): T {
   }
 }
 
-async function fetchFromSupabase(key: CollectionKey): Promise<unknown | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) return null;
-
-  const supabase = createSupabaseClient(url, anonKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data, error } = await supabase.from("content").select("data").eq("key", key).maybeSingle();
-  if (error) throw new Error(error.message);
-  return data?.data ?? null;
+async function fetchFromBlobs(key: CollectionKey): Promise<unknown | null> {
+  const store = blobStore("content");
+  if (!store) return null;
+  return (await store.get(key, { type: "json" })) ?? null;
 }
 
 // Cache entre requisições (invalidado pela tag "content" quando o admin salva).
-// Se a consulta ao Supabase falhar, o erro sobe (e não é guardado no cache): numa
+// Se a leitura do Blobs falhar, o erro sobe (e não é guardado no cache): numa
 // regeração em segundo plano o Next mantém a página anterior no ar, em vez de
 // publicar o JSON do repositório (que pode estar desatualizado) por até 1 hora.
-const fetchCached = unstable_cache(fetchFromSupabase, ["content"], {
+const fetchCached = unstable_cache(fetchFromBlobs, ["content"], {
   tags: ["content"],
   revalidate: 3600,
 });
 
 const readCached = cache(async (key: CollectionKey): Promise<unknown> => {
-  // Sem Supabase configurado ou sem o registro no banco, usa o conteúdo local/embutido.
+  // Fora do Netlify ou sem o registro no Blobs, usa o conteúdo local/embutido.
   const remote = await fetchCached(key);
   return remote ?? readLocal<unknown>(key);
 });
 
 /**
- * Lê uma coleção. Se o Supabase estiver configurado e tiver o registro, vem do banco;
- * senão cai pro JSON do repositório (primeiro deploy / desenvolvimento sem credenciais).
+ * Lê uma coleção. No Netlify, se o Blobs tiver o registro (salvo pelo /admin), vem dele;
+ * senão cai pro JSON do repositório (primeiro deploy / desenvolvimento local).
  */
 export async function readCollection<T>(key: CollectionKey): Promise<T> {
   return (await readCached(key)) as T;
 }
 
-/** Grava uma coleção no Supabase quando configurado; senão, no arquivo local. */
-export async function writeCollection(key: CollectionKey, data: unknown): Promise<"supabase" | "arquivo"> {
-  const supabase = await createClient();
-  if (supabase) {
-    const { error } = await supabase
-      .from("content")
-      .upsert({ key, data, updated_at: new Date().toISOString() });
-    if (error) throw new Error(error.message);
-    return "supabase";
+/** Grava uma coleção no Netlify Blobs quando disponível; senão, no arquivo local. */
+export async function writeCollection(key: CollectionKey, data: unknown): Promise<"netlify" | "arquivo"> {
+  const store = blobStore("content");
+  if (store) {
+    await store.setJSON(key, data);
+    return "netlify";
   }
 
   if (process.env.NODE_ENV === "production") {
-    throw new Error("Sem Supabase configurado, não dá pra salvar no site publicado.");
+    throw new Error("Netlify Blobs indisponível, não dá pra salvar no site publicado.");
   }
 
   fs.writeFileSync(

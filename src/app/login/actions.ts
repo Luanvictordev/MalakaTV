@@ -1,27 +1,32 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import {
+  SESSION_COOKIE,
+  authConfigured,
+  createSessionValue,
+  passwordMatches,
+  sessionCookieOptions,
+} from "@/lib/auth";
 
 export async function signIn(_prevState: { error: string } | null, formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  if (!email || !password) return { error: "Preencha email e senha." };
+  if (!password) return { error: "Digite a senha." };
+  if (!authConfigured()) return { error: "Login não configurado neste ambiente." };
+  if (!(await passwordMatches(password))) return { error: "Senha inválida." };
 
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado neste ambiente." };
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "Email ou senha inválidos." };
+  const store = await cookies();
+  store.set(SESSION_COOKIE, await createSessionValue(), sessionCookieOptions);
 
   const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/admin";
   redirect(safeNext);
 }
 
 export async function signOut() {
-  const supabase = await createClient();
-  await supabase?.auth.signOut();
+  const store = await cookies();
+  store.delete(SESSION_COOKIE);
   redirect("/");
 }

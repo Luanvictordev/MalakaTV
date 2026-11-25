@@ -1,18 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import { slugify } from "@/lib/format";
-import { createClient, getCurrentUser, supabaseConfigured } from "@/lib/supabase/server";
+import { authConfigured, isAdmin } from "@/lib/auth";
+import { blobStore } from "@/lib/blobs";
 
 export const runtime = "nodejs";
 
 const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
 
 export async function POST(request: Request) {
-  if (supabaseConfigured()) {
-    const user = await getCurrentUser();
-    if (!user) return Response.json({ error: "Faça login pra enviar imagens." }, { status: 401 });
+  if (authConfigured()) {
+    if (!(await isAdmin())) return Response.json({ error: "Faça login pra enviar imagens." }, { status: 401 });
   } else if (process.env.NODE_ENV === "production") {
-    return Response.json({ error: "Configure o Supabase pra enviar imagens." }, { status: 403 });
+    return Response.json({ error: "Configure ADMIN_PASSWORD e ADMIN_SESSION_SECRET pra enviar imagens." }, { status: 403 });
   }
 
   const form = await request.formData();
@@ -33,18 +33,14 @@ export async function POST(request: Request) {
   const name = `${base}-${Date.now().toString(36)}${ext.toLowerCase()}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  if (supabaseConfigured()) {
-    const supabase = await createClient();
-    if (!supabase) return Response.json({ error: "Supabase indisponível." }, { status: 500 });
-
-    const { error } = await supabase.storage
-      .from("malaka")
-      .upload(name, buffer, { contentType: file.type, upsert: false });
-
-    if (error) return Response.json({ error: error.message }, { status: 500 });
-
-    const { data } = supabase.storage.from("malaka").getPublicUrl(name);
-    return Response.json({ url: data.publicUrl });
+  const store = blobStore("uploads");
+  if (store) {
+    try {
+      await store.set(name, await file.arrayBuffer(), { metadata: { contentType: file.type } });
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : "Falha ao enviar." }, { status: 500 });
+    }
+    return Response.json({ url: `/media/${name}` });
   }
 
   const dir = path.join(process.cwd(), "public", "uploads");
