@@ -1,4 +1,3 @@
-import { getStore } from "@netlify/blobs";
 import { blobStore } from "@/lib/blobs";
 
 export const runtime = "nodejs";
@@ -17,8 +16,8 @@ export async function GET() {
     }
   };
   const results = [
-    await run("padrao (fetch do Next)", () => getStore({ name: "content" }).get("links", { type: "json" })),
-    await run("blobStore (fetch original)", () => blobStore("content")!.get("links", { type: "json" })),
+    await run("chave inexistente", () => blobStore("content")!.get("naoexiste", { type: "json" })),
+    await run("links", () => blobStore("content")!.get("links", { type: "json" })),
     await run("blobStore set+get+delete", async () => {
       const s = blobStore("content")!;
       await s.setJSON("_diag", { ok: 1 });
