@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import BackToTop from "@/components/BackToTop";
 import { MotionProvider } from "@/components/Motion";
@@ -8,15 +8,18 @@ import SiteFooter from "@/components/SiteFooter";
 import { getGames, getSite } from "@/lib/content";
 import { SITE_URL } from "@/lib/seo";
 
-const display = Manrope({
-  subsets: ["latin"],
-  weight: ["700", "800"],
+const display = localFont({
+  src: [
+    { path: "./fonts/manrope-latin-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/manrope-latin-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-manrope",
   display: "swap",
 });
 
-const body = Inter({
-  subsets: ["latin"],
+const body = localFont({
+  src: "./fonts/inter-latin-var.woff2",
+  weight: "100 900",
   variable: "--font-inter",
   display: "swap",
 });

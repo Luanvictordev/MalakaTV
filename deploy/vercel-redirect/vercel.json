@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "https://malakatv.netlify.app/", "permanent": true },
+    { "source": "/:path*", "destination": "https://malakatv.netlify.app/:path*", "permanent": true }
+  ]
+}
